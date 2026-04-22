@@ -4,7 +4,19 @@ import { detectSyntax } from './parsers/detect';
 import { parseUBL } from './parsers/ubl';
 import { parseCII } from './parsers/cii';
 
-export type { Invoice } from './schema';
+export type {
+  Invoice,
+  LineItem,
+  Party,
+  Address,
+  Contact,
+  TaxCategory,
+  TaxBreakdownRow,
+  AllowanceCharge,
+  PaymentMeans,
+  Totals,
+  ElectronicAddress,
+} from './schema';
 export { InvoiceSchema } from './schema';
 export type { ParseResult, ParseError, ParseWarning, SourceSyntax } from './types';
 export { parseUBL, parseCII, detectSyntax };
