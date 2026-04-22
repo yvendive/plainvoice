@@ -2,6 +2,23 @@
 
 Session-level status for the Plainvoice project. For the "why" behind decisions, see `docs/RESEARCH.md`. For the "what", see `docs/SPEC.md`.
 
+## 2026-04-22 — M3 converters + drop-zone wiring
+
+**Done**
+- Added `src/lib/convert/` with three converters against a shared `ConverterResult` contract: `csv.ts` (RFC 4180 quoting, UTF-8 BOM, CRLF, `;` / `,` / `\t` separator × `,` / `.` decimal, line-items + header-only layouts), `txt.ts` (64-col fixed-width layout with box-drawing header, credit-note variant via `typeCode === '381'`, reverse-charge exemption line), `xlsx.ts` (three sheets — Overview / Lines / Tax — via `await import('exceljs')` so the 200 kB lib stays off the initial chunk, frozen header rows, locale-aware currency formats, auto-sized columns clamped to `[12, 60]`).
+- Shared helpers: `filename.ts` (`invoiceFilename(invoice, ext)` — sanitises unsafe chars, caps at 80 chars, falls back to `'invoice'`), `format.ts` (cached `Intl.NumberFormat` for DE/EN, ISO dates + `dd.mm.yyyy`, CSV-specific amount/quantity formatters that respect the chosen decimal), `labels.ts` (single DE/EN `LabelBundle` consumed by all three converters so the converter library runs pure without an i18n context).
+- Rewrote `FileDropZone` as a controlled component (`onFile` / `onTooBig` / `disabled` props, 10 MB cap) and introduced `Converter.tsx` as the new page host — a `useReducer` state machine (`idle → parsing → ready → generating → done` / `invalid`) that owns parse dispatch, triggers a `URL.createObjectURL` download, and renders the result panel. Placeholder toast and `Toast.tsx` removed.
+- New presentational components: `ConfirmationCard` (key invoice fields), `FormatPicker` (PDF/XLSX/CSV/TXT grid with PDF always disabled + "Bald verfügbar" badge), `CsvOptions` (collapsible details with RadioGroup triplet; picking separator `,` auto-flips decimal to `.` per §9.2 gotcha), `ErrorCard`, `ResultPanel`.
+- Added ~40 `Converter.*` i18n keys in both `de.json` and `en.json` — statuses, format labels, CSV options, error messages, warnings, fallback filename.
+- Vitest suite in `tests/convert/` (7 files, 80+ tests) covering filename sanitisation, number/date formatting, label localisation, CSV quoting / BOM / decimal swap / all separators / both layouts, TXT snapshot per fixture, XLSX round-trip via ExcelJS (sheet names, row counts, frozen panes, currency format, column-width clamp), plus an end-to-end integration suite that walks every fixture through each converter. Files use the `// @vitest-environment node` pragma so `Blob.arrayBuffer()` / `Blob.text()` work. BOM assertion decodes raw bytes with `ignoreBOM: true` because `TextDecoder` strips the BOM by spec.
+- `pnpm lint && pnpm typecheck && pnpm test && pnpm build` all pass locally. Coverage on `src/lib/convert/`: **99.42 % lines, 87.5 % branches, 100 % functions** (well above the ≥85 % line-threshold from the brief).
+
+**Next (Yves)**
+- Manual QA per §7.3 of the handoff: open generated CSV in Excel + DATEV importer, open XLSX in Excel / Numbers / LibreOffice, open TXT in Notepad + TextEdit, drop non-XML + non-X-Rechnung files, toggle DE/EN.
+
+**Next (Cowork, me)**
+- Write `docs/handoffs/04-pdf.md` — PDF generation via `pdf-lib` + `@pdf-lib/fontkit` (branded layout, A4, DE/EN, embedded Inter/Noto Sans).
+
 ## 2026-04-22 — M2 UBL + CII parsers
 
 **Done**
