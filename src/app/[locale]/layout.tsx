@@ -4,7 +4,6 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { locales, isLocale, type Locale } from '@/i18n/config';
 import { HtmlLangSetter } from '@/components/HtmlLangSetter';
-import { ToastProvider } from '@/components/Toast';
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
@@ -42,7 +41,7 @@ export default async function LocaleLayout({
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
       <HtmlLangSetter locale={locale} />
-      <ToastProvider>{children}</ToastProvider>
+      {children}
     </NextIntlClientProvider>
   );
 }

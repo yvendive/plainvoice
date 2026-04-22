@@ -3,26 +3,31 @@
 import { useCallback, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
-import { useToast } from './Toast';
 
-export function FileDropZone() {
+const MAX_BYTES = 10 * 1024 * 1024;
+
+export interface FileDropZoneProps {
+  onFile: (file: File) => void;
+  onTooBig: (file: File) => void;
+  disabled?: boolean;
+}
+
+export function FileDropZone({ onFile, onTooBig, disabled = false }: FileDropZoneProps) {
   const t = useTranslations('Converter');
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [dragActive, setDragActive] = useState(false);
-  const showToast = useToast();
 
   const handleFiles = useCallback(
     (files: FileList | null) => {
-      if (!files || files.length === 0) return;
+      if (disabled || !files || files.length === 0) return;
       const file = files[0];
-      console.log('[Plainvoice] file selected (M1 placeholder):', file.name, file.size);
-      showToast({
-        title: t('comingSoonTitle'),
-        description: t('comingSoonBody'),
-        variant: 'info',
-      });
+      if (file.size > MAX_BYTES) {
+        onTooBig(file);
+        return;
+      }
+      onFile(file);
     },
-    [showToast, t],
+    [disabled, onFile, onTooBig],
   );
 
   const onDrop = useCallback(
@@ -36,39 +41,43 @@ export function FileDropZone() {
 
   const onDragOver = useCallback((event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
-    setDragActive(true);
-  }, []);
+    if (!disabled) setDragActive(true);
+  }, [disabled]);
 
   const onDragLeave = useCallback(() => setDragActive(false), []);
 
   const openPicker = useCallback(() => {
-    inputRef.current?.click();
-  }, []);
+    if (!disabled) inputRef.current?.click();
+  }, [disabled]);
 
   const onKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLDivElement>) => {
+      if (disabled) return;
       if (event.key === 'Enter' || event.key === ' ') {
         event.preventDefault();
         openPicker();
       }
     },
-    [openPicker],
+    [disabled, openPicker],
   );
 
   return (
     <div
       role="button"
-      tabIndex={0}
+      tabIndex={disabled ? -1 : 0}
       aria-label={t('dropzoneTitle')}
+      aria-disabled={disabled}
       onClick={openPicker}
       onKeyDown={onKeyDown}
       onDrop={onDrop}
       onDragOver={onDragOver}
       onDragLeave={onDragLeave}
+      data-testid="dropzone"
       className={cn(
         'flex w-full cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed px-8 py-16 text-center transition-colors',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)] focus-visible:ring-offset-2',
-        dragActive
+        disabled && 'cursor-not-allowed opacity-60',
+        !disabled && dragActive
           ? 'border-[color:var(--accent)] bg-[color:var(--muted)]'
           : 'border-[color:var(--border)] hover:border-[color:var(--accent)]/60',
       )}
@@ -84,7 +93,11 @@ export function FileDropZone() {
         type="file"
         accept=".xml,application/xml,text/xml"
         className="sr-only"
-        onChange={(event) => handleFiles(event.target.files)}
+        disabled={disabled}
+        onChange={(event) => {
+          handleFiles(event.target.files);
+          event.target.value = '';
+        }}
       />
     </div>
   );
