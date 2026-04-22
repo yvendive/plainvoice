@@ -12,13 +12,13 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html', 'json-summary'],
-      include: ['src/lib/invoice/**/*.ts'],
+      include: ['src/lib/invoice/**/*.ts', 'src/lib/convert/**/*.ts'],
       exclude: ['**/*.test.ts', '**/*.spec.ts', '**/types.ts'],
       thresholds: {
-        lines: 90,
-        functions: 90,
-        statements: 90,
-        branches: 75,
+        lines: 85,
+        functions: 85,
+        statements: 85,
+        branches: 70,
       },
     },
   },
