@@ -2,6 +2,22 @@
 
 Session-level status for the Plainvoice project. For the "why" behind decisions, see `docs/RESEARCH.md`. For the "what", see `docs/SPEC.md`.
 
+## 2026-04-22 — M2 UBL + CII parsers
+
+**Done**
+- Added `Invoice` Zod schema in `src/lib/invoice/schema.ts` (EN 16931 business terms grouped as document → parties → lines → allowances → tax → totals → payment → provenance), with `z.infer` types.
+- UBL parser in `src/lib/invoice/parsers/ubl.ts` handles both `<Invoice>` and `<CreditNote>` via a shared core (branch on root + line tag + quantity tag).
+- CII parser in `src/lib/invoice/parsers/cii.ts` normalises `udt:DateTimeString format="102"` to ISO and widens `format="610"` to day 01 with a warning.
+- Structural dialect detection in `src/lib/invoice/parsers/detect.ts` — fingerprints via root name + signature children, since `removeNSPrefix: true` strips xmlns attributes.
+- Top-level `parseInvoice(xml)` in `src/lib/invoice/index.ts` sniffs syntax and dispatches. Discriminated-union result type, no throws at the module boundary.
+- Three edge-case fixtures in `samples/`: `ubl-credit-note.xml`, `cii-mixed-rate.xml` (19% + 7%), `ubl-reverse-charge.xml` (intra-EU, category AE).
+- Vitest suite (5 files, 68 tests): positive path for all 5 fixtures, negative path for parse failures and missing required fields, helper unit tests, detect-module edge cases, version-warning coverage. `pnpm test:coverage` → 94.59% lines / 100% functions on `src/lib/invoice/` (≥90% line threshold from the brief).
+- `docs/MAPPING.md` with full UBL→Invoice and CII→Invoice field tables keyed to EN 16931 BT codes.
+- `pnpm lint && pnpm typecheck && pnpm test && pnpm build` all pass locally.
+
+**Next (Cowork, me)**
+- Write `docs/handoffs/03-converters.md` — CSV + TXT + XLSX generation and wiring the drop zone.
+
 ## 2026-04-22 — M1 scaffold
 
 **Done**
