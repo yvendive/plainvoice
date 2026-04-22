@@ -2,7 +2,31 @@
 
 Session-level status for the Plainvoice project. For the "why" behind decisions, see `docs/RESEARCH.md`. For the "what", see `docs/SPEC.md`.
 
-## 2026-04-21 — Kickoff + spec + brand
+## 2026-04-22 — M1 scaffold
+
+**Done**
+- Scaffolded Next.js 15 + TypeScript (strict) + Tailwind CSS 4 + `next-intl` 3.x, following `docs/handoffs/01-scaffold.md`.
+- Static export build (`output: 'export'`) so the app is portable to easyname / any static host.
+- Bilingual routing under `src/app/[locale]/` with DE default and EN toggle; locale persisted in `localStorage` key `xrc.lang`.
+- Placeholder landing page with non-functional drop zone (shows a "Coming soon" toast on file select) and privacy stub at `/datenschutz`.
+- Lightweight, hand-rolled shadcn-style primitives (`button`, `card`, `alert`, `radio-group`) in `src/components/ui/`.
+- GitHub Actions CI workflow (lint + typecheck + test + build on Node 22) and a stubbed `deploy.yml` for easyname SFTP with `# TODO: populate secrets`.
+- Smoke test covering i18n config + message catalogs (`pnpm test` green locally).
+
+**Next (Yves)**
+- Register the `plainvoice.*` domain and share the final choice.
+- Provide easyname SFTP credentials as GitHub Actions secrets (`EASYNAME_HOST`, `EASYNAME_USER`, `EASYNAME_PASSWORD`, `EASYNAME_REMOTE_PATH`).
+- Link the repo to Vercel so PR previews come online.
+
+**Next (Cowork, me)**
+- Write `docs/handoffs/02-parser.md` for UBL + CII parsers → `Invoice` model once M1 is merged.
+
+## 2026-04-21 — Kickoff + spec + brand + repo live
+
+**Repo:** https://github.com/yvendive/plainvoice (private)
+**Domain:** plainvoice.de (ordered via easyname)
+**First commit:** 493f27d — initial planning docs + MIT license
+
 
 **Done**
 - Agreed scope with Yves: browser-only, Next.js + TS, DE+EN UI, MVP (single upload → single output → download).

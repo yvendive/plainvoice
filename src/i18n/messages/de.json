@@ -1,0 +1,30 @@
+{
+  "App": {
+    "title": "Plainvoice",
+    "tagline": "Rechnungen im Klartext.",
+    "languageLabel": "Sprache"
+  },
+  "Converter": {
+    "subtitle": "Konvertieren Sie Ihre X-Rechnung in CSV, TXT, XLSX oder PDF — direkt in Ihrem Browser.",
+    "dropzoneTitle": "XML-Datei hier ablegen",
+    "dropzoneOr": "oder",
+    "dropzoneBrowse": "Datei auswählen",
+    "dropzoneHint": "Nur .xml-Dateien, max. 10 MB",
+    "privacy": "Ihre Rechnung verlässt Ihren Browser nie.",
+    "comingSoonTitle": "Demnächst verfügbar",
+    "comingSoonBody": "Die Konvertierung ist in Entwicklung. Die Datei wurde nicht hochgeladen."
+  },
+  "Footer": {
+    "privacyLink": "Datenschutz",
+    "copyright": "© {year} Plainvoice. Open Source (MIT)."
+  },
+  "Privacy": {
+    "title": "Datenschutz",
+    "body": "Diese Anwendung verarbeitet Ihre Rechnung ausschließlich lokal in Ihrem Browser. Es werden keine Inhalte an Server übertragen.",
+    "back": "Zurück"
+  },
+  "Metadata": {
+    "title": "Plainvoice — X-Rechnung Konverter",
+    "description": "Konvertieren Sie X-Rechnung XML in CSV, TXT, XLSX oder PDF — direkt in Ihrem Browser. Kostenlos, Open Source, datenschutzfreundlich."
+  }
+}
