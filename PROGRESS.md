@@ -2,6 +2,23 @@
 
 Session-level status for the Plainvoice project. For the "why" behind decisions, see `docs/RESEARCH.md`. For the "what", see `docs/SPEC.md`.
 
+## 2026-04-23 — M3.1 CSV compatibility modes + production deploy
+
+**Done**
+- **M3.1 CSV compatibility modes (PR #4)** — added `modern` vs `legacy` CSV variants following a manual-QA finding: Excel's direct-open handles RFC 4180 quoted newlines correctly, but Power Query's "From Text (Legacy)" wizard and DATEV importers split embedded newlines into separate rows. `modern` (default) preserves RFC 4180 behaviour; `legacy` collapses `\n` / `\r\n` / `\r` inside string cells to ` · ` and appends `-legacy` to the filename so the two variants are easy to tell apart. New "Kompatibilität / Compatibility" radio above the Layout radio in the CSV options panel, with inline hints naming concrete target apps. `RadioGroupItem` extended with an optional `hint` prop for secondary text under the label. 8 new test cases plus a legacy-mode snapshot; coverage on `src/lib/convert/` unchanged at ≥ 99%.
+- **Deploy fix (PR #5)** — the M1 stub workflow paired `protocol: sftp` with `SamKirkland/FTP-Deploy-Action`, which only speaks FTP/FTPS/FTPS-legacy. Switched to `protocol: ftps` (still TLS-encrypted, port 21, supported by easyname Large Hosting). Removed the auto-trigger on push to main pending a first green manual run.
+- **First production deploy** — triggered the deploy workflow manually; SFTP upload to easyname succeeded; **plainvoice.de is live**.
+
+**Next (Yves)**
+- Manual QA on plainvoice.de across Chrome / Safari / Firefox and on mobile. Confirm both CSV variants open correctly in Excel (direct-open + Power Query Legacy), DATEV, Numbers, LibreOffice, and Google Sheets.
+- Once confident, re-enable auto-deploy on push to main (tiny PR removing the `workflow_dispatch`-only gate).
+
+**Next (Cowork, me)**
+- Write `docs/handoffs/04-pdf.md` — PDF generation via `pdf-lib` + `@pdf-lib/fontkit` (branded A4, DE/EN, embedded Inter/Noto Sans).
+
+**Follow-up (between M4 and M5)**
+- Bump GitHub Actions runners off Node 20 (GitHub is deprecating; forced switch June 2, 2026; Node 20 runners removed September 16, 2026). Mechanical version bumps of `actions/checkout`, `actions/setup-node`, `pnpm/action-setup`, and `SamKirkland/FTP-Deploy-Action`.
+
 ## 2026-04-22 — M3 converters + drop-zone wiring
 
 **Done**
