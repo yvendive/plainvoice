@@ -1,0 +1,249 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`convertTxt — snapshots > snapshot: cii-invoice-standard.xml in DE 1`] = `
+"╔══════════════════════════════════════════════════════════════╗
+║  Rechnung                                                    ║
+╚══════════════════════════════════════════════════════════════╝
+
+  Rechnungsnummer     : INV-2026-0002
+  Rechnungsdatum      : 2026-04-22
+  Fälligkeit          : 2026-05-06
+  Format              : CII
+  Währung             : EUR
+  Leitweg-ID          : 04011000-12345-67
+
+  Verkäufer
+    Muster Software UG
+    Beispielallee 7
+    20095 Hamburg, DE
+    USt-IdNr. Verkäufer: DE987654321
+
+  Käufer
+    Beispiel Stadt
+    Rathausplatz 1
+    50667 Köln, DE
+
+  ── Positionen ──────────────────────────────────────────────────
+  Pos.  Artikel                          Menge   Einzelpreis         Netto
+  ────────────────────────────────────────────────────────────────
+  1     Softwareentwicklung             10 HUR       90,00 €      900,00 €
+  ────────────────────────────────────────────────────────────────
+
+  ── Steuer ──────────────────────────────────────────────────────
+  S       19,00 %  Basis     900,00 €  Steuer     171,00 €
+  ────────────────────────────────────────────────────────────────
+
+  ── Summen ──────────────────────────────────────────────────────
+  Netto                                                 900,00 €
+  Umsatzsteuer                                          171,00 €
+  Brutto                                              1.071,00 €
+  Zahlbetrag                                          1.071,00 €
+
+  Zahlungsbedingungen:
+    Zahlbar innerhalb von 14 Tagen netto ohne Abzug.
+    IBAN: DE89370400440532013000
+    BIC: COBADEFFXXX
+
+  Notizen:
+    Vielen Dank für Ihren Auftrag.
+
+"
+`;
+
+exports[`convertTxt — snapshots > snapshot: cii-mixed-rate.xml in DE 1`] = `
+"╔══════════════════════════════════════════════════════════════╗
+║  Rechnung                                                    ║
+╚══════════════════════════════════════════════════════════════╝
+
+  Rechnungsnummer     : INV-2026-0003
+  Rechnungsdatum      : 2026-04-22
+  Fälligkeit          : 2026-05-06
+  Format              : CII
+  Währung             : EUR
+  Leitweg-ID          : 04011000-12345-67
+
+  Verkäufer
+    Muster Bildungs GmbH
+    Lehrstraße 5
+    70173 Stuttgart, DE
+    USt-IdNr. Verkäufer: DE111222333
+
+  Käufer
+    Beispiel Akademie e.V.
+    Hauptstraße 9
+    04109 Leipzig, DE
+
+  ── Positionen ──────────────────────────────────────────────────
+  Pos.  Artikel                          Menge   Einzelpreis         Netto
+  ────────────────────────────────────────────────────────────────
+  1     Beratung                        10 HUR      100,00 €    1.000,00 €
+  2     Schulungshandbuch                5 H87       20,00 €      100,00 €
+  ────────────────────────────────────────────────────────────────
+
+  ── Steuer ──────────────────────────────────────────────────────
+  S       19,00 %  Basis   1.000,00 €  Steuer     190,00 €
+  S        7,00 %  Basis     100,00 €  Steuer       7,00 €
+  ────────────────────────────────────────────────────────────────
+
+  ── Summen ──────────────────────────────────────────────────────
+  Netto                                               1.100,00 €
+  Umsatzsteuer                                          197,00 €
+  Brutto                                              1.297,00 €
+  Zahlbetrag                                          1.297,00 €
+
+  Zahlungsbedingungen:
+    Zahlbar innerhalb von 14 Tagen netto ohne Abzug.
+    IBAN: DE89370400440532013000
+
+"
+`;
+
+exports[`convertTxt — snapshots > snapshot: ubl-credit-note.xml in DE 1`] = `
+"╔══════════════════════════════════════════════════════════════╗
+║  Gutschrift                                                  ║
+╚══════════════════════════════════════════════════════════════╝
+
+  Rechnungsnummer     : CN-2026-0001
+  Rechnungsdatum      : 2026-04-25
+  Format              : UBL
+  Währung             : EUR
+  Leitweg-ID          : 04011000-12345-67
+
+  Verkäufer
+    Muster Dienstleister GmbH
+    Musterstraße 12
+    10115 Berlin, DE
+    USt-IdNr. Verkäufer: DE123456789
+
+  Käufer
+    Beispiel Behörde
+    Behördenweg 2
+    80331 München, DE
+
+  ── Positionen ──────────────────────────────────────────────────
+  Pos.  Artikel                          Menge   Einzelpreis         Netto
+  ────────────────────────────────────────────────────────────────
+  1     Beratungsleistung                2 HUR       50,00 €      100,00 €
+  ────────────────────────────────────────────────────────────────
+
+  ── Steuer ──────────────────────────────────────────────────────
+  S       19,00 %  Basis     100,00 €  Steuer      19,00 €
+  ────────────────────────────────────────────────────────────────
+
+  ── Summen ──────────────────────────────────────────────────────
+  Netto                                                 100,00 €
+  Umsatzsteuer                                           19,00 €
+  Brutto                                                119,00 €
+  Zahlbetrag                                            119,00 €
+
+  Zahlungsbedingungen:
+    IBAN: DE89370400440532013000
+    BIC: COBADEFFXXX
+
+  Notizen:
+    Gutschrift zu Rechnung INV-2026-0001 (2 Stunden zu viel berechnet).
+
+"
+`;
+
+exports[`convertTxt — snapshots > snapshot: ubl-invoice-standard.xml in DE 1`] = `
+"╔══════════════════════════════════════════════════════════════╗
+║  Rechnung                                                    ║
+╚══════════════════════════════════════════════════════════════╝
+
+  Rechnungsnummer     : INV-2026-0001
+  Rechnungsdatum      : 2026-04-22
+  Fälligkeit          : 2026-05-22
+  Format              : UBL
+  Währung             : EUR
+  Leitweg-ID          : 04011000-12345-67
+
+  Verkäufer
+    Muster Dienstleister GmbH
+    Musterstraße 12
+    10115 Berlin, DE
+    USt-IdNr. Verkäufer: DE123456789
+
+  Käufer
+    Beispiel Behörde
+    Behördenweg 2
+    80331 München, DE
+
+  ── Positionen ──────────────────────────────────────────────────
+  Pos.  Artikel                          Menge   Einzelpreis         Netto
+  ────────────────────────────────────────────────────────────────
+  1     Beratungsleistung                4 HUR       50,00 €      200,00 €
+  ────────────────────────────────────────────────────────────────
+
+  ── Steuer ──────────────────────────────────────────────────────
+  S       19,00 %  Basis     200,00 €  Steuer      38,00 €
+  ────────────────────────────────────────────────────────────────
+
+  ── Summen ──────────────────────────────────────────────────────
+  Netto                                                 200,00 €
+  Umsatzsteuer                                           38,00 €
+  Brutto                                                238,00 €
+  Zahlbetrag                                            238,00 €
+
+  Zahlungsbedingungen:
+    Zahlbar innerhalb von 30 Tagen netto ohne Abzug.
+    IBAN: DE89370400440532013000
+    BIC: COBADEFFXXX
+
+  Notizen:
+    Vielen Dank für Ihren Auftrag.
+
+"
+`;
+
+exports[`convertTxt — snapshots > snapshot: ubl-reverse-charge.xml in DE 1`] = `
+"╔══════════════════════════════════════════════════════════════╗
+║  Rechnung                                                    ║
+╚══════════════════════════════════════════════════════════════╝
+
+  Rechnungsnummer     : INV-2026-0004
+  Rechnungsdatum      : 2026-04-22
+  Fälligkeit          : 2026-05-22
+  Format              : UBL
+  Währung             : EUR
+  Leitweg-ID          : FR-CLIENT-7788
+
+  Verkäufer
+    Muster Consulting GmbH
+    Beraterallee 3
+    60311 Frankfurt am Main, DE
+    USt-IdNr. Verkäufer: DE555666777
+
+  Käufer
+    Exemple Société SARL
+    Rue de l'Exemple 18
+    75002 Paris, FR
+    USt-IdNr. Verkäufer: FR12345678901
+
+  ── Positionen ──────────────────────────────────────────────────
+  Pos.  Artikel                          Menge   Einzelpreis         Netto
+  ────────────────────────────────────────────────────────────────
+  1     Cross-border consulting          3 DAY      800,00 €    2.400,00 €
+  ────────────────────────────────────────────────────────────────
+
+  ── Steuer ──────────────────────────────────────────────────────
+  AE       0,00 %  Basis   2.400,00 €  Steuer       0,00 €
+    (Befreiungsgrund: Reverse charge — Article 196 of Directive 2006/112/EC)
+  ────────────────────────────────────────────────────────────────
+
+  ── Summen ──────────────────────────────────────────────────────
+  Netto                                               2.400,00 €
+  Umsatzsteuer                                            0,00 €
+  Brutto                                              2.400,00 €
+  Zahlbetrag                                          2.400,00 €
+
+  Zahlungsbedingungen:
+    Payable within 30 days net.
+    IBAN: DE89370400440532013000
+    BIC: COBADEFFXXX
+
+  Notizen:
+    Reverse charge — VAT liability transferred to the recipient pursuant to Article 196 of Directive 2006/112/EC.
+
+"
+`;

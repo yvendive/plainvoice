@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import { setRequestLocale } from 'next-intl/server';
 import { getTranslations } from 'next-intl/server';
-import { isLocale } from '@/i18n/config';
+import { isLocale, type Locale } from '@/i18n/config';
 import { notFound } from 'next/navigation';
-import { FileDropZone } from '@/components/FileDropZone';
+import { Converter } from '@/components/Converter';
 import { LanguageToggle } from '@/components/LanguageToggle';
 
 export default async function LandingPage({
@@ -39,7 +39,7 @@ export default async function LandingPage({
           </p>
         </div>
 
-        <FileDropZone />
+        <Converter locale={locale as Locale} />
 
         <p className="text-center text-sm text-[color:var(--muted-foreground)]">
           {tc('privacy')}
