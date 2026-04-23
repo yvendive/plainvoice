@@ -2,6 +2,28 @@
 
 Session-level status for the Plainvoice project. For the "why" behind decisions, see `docs/RESEARCH.md`. For the "what", see `docs/SPEC.md`.
 
+## 2026-04-23 — M4 PDF generation shipped + M6 roadmap
+
+**Done**
+- **M4 PDF generation (PR #7)** — in-browser branded A4 invoices via `pdf-lib` + `@pdf-lib/fontkit`, dynamically imported so the library stays off the initial bundle. Inter Regular + Bold embedded with subsetting; OFL licence committed under `public/fonts/`. Per-section renderers (header, parties, lines, allowances, totals, payment, footer) using a cursor-based top-down layout with explicit y-axis inversion comments. Credit-note title swaps on `typeCode === '381'`; reverse-charge disclaimer drawn above the footer on the last page and tagged via PDF `Keywords` metadata. 80-line pagination test covers multi-page invoices. Coverage: 94.6 % stmts / 80.5 % branches. PDF tile now enabled in `FormatPicker` (no more "Bald verfügbar" badge).
+- **Second production deploy** — workflow run #10 pushed the PDF-enabled build to plainvoice.de via FTPS (1 m 27 s).
+
+**Review findings carried into M5**
+- Allowance fallback labels (`'Charge'` / `'Discount'` in `pdf/sections/allowances.ts`) aren't translated — German PDF shows English words when `ac.reason` is empty. Add `labels.pdf.allowanceFallback` / `chargeFallback` and wire them through.
+- Dead `void USABLE_WIDTH;` in `pdf/sections/footer.ts` — drop the unused import.
+- Default output format is still `'xlsx'` in `Converter.tsx`; switch to `'pdf'` since PDF is now the most universally openable output.
+
+**Next (Yves)**
+- Manual QA on plainvoice.de: generate PDFs for the four fixtures (`ubl-invoice-standard`, `ubl-credit-note`, `ubl-reverse-charge`, `cii-mixed-rate`) in DE + EN and spot-check spacing, wrapping, and reverse-charge disclaimer placement.
+
+**Next (Cowork, me)**
+1. **Node.js 24 bump** (was "Follow-up between M4 and M5" — promoted to immediate). Mechanical version bumps of `actions/checkout`, `actions/setup-node`, `pnpm/action-setup`, `SamKirkland/FTP-Deploy-Action`; bump `node-version` in both workflows to `24.x`.
+2. **M5 brief** — copy polish, launch prep, footer requirements line ("Funktioniert in allen aktuellen Browsern. Keine Installation, kein Konto, keine Uploads."), default format → PDF, the two tiny fixes listed above.
+
+**Roadmap after M5**
+- **M6 — Bulk conversion** — multi-file upload → batch convert → ZIP download, with a "combine" mode for CSV + XLSX that concatenates all invoices into a single file (genuine accounting-workflow killer). New batch state machine, per-file status UI, JSZip (or similar) dependency, progress indicator, error-per-file UX. Slotted as M6 rather than squeezed into M5 so the public launch doesn't slip; bulk becomes the second news beat post-launch.
+- **M4.5 — Impressum + Datenschutzerklärung** — parked on 2026-04-23 per Yves's call. Trigger before any public promotion of plainvoice.de (social posts, launch announcement, email signature linking). Needs Yves's Rechtsform + postal address + contact email before the brief can be written.
+
 ## 2026-04-23 — M3.1 CSV compatibility modes + production deploy
 
 **Done**
