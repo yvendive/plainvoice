@@ -66,6 +66,27 @@ export interface LabelBundle {
     field: string;
     value: string;
   };
+  pdf: {
+    billTo: string;
+    payee: string;
+    paymentInfo: string;
+    accountHolder: string;
+    netSubtotal: string;
+    vatLabel: string;
+    totalInclVat: string;
+    amountDue: string;
+    paid: string;
+    rounding: string;
+    pageOf: (n: number, total: number) => string;
+    footerBrand: string;
+    reverseChargeNote: string;
+    emDash: string;
+    units: {
+      hour: string;
+      piece: string;
+      unit: string;
+    };
+  };
 }
 
 const de: LabelBundle = {
@@ -134,6 +155,27 @@ const de: LabelBundle = {
     field: 'Feld',
     value: 'Wert',
   },
+  pdf: {
+    billTo: 'Empfänger',
+    payee: 'Zahlungsempfänger',
+    paymentInfo: 'Zahlungsinformationen',
+    accountHolder: 'Kontoinhaber',
+    netSubtotal: 'Zwischensumme netto',
+    vatLabel: 'Umsatzsteuer',
+    totalInclVat: 'Gesamtsumme',
+    amountDue: 'Zahlbetrag',
+    paid: 'Bereits gezahlt',
+    rounding: 'Rundung',
+    pageOf: (n, total) => `Seite ${n} von ${total}`,
+    footerBrand: 'Erstellt mit Plainvoice · plainvoice.de',
+    reverseChargeNote: 'Steuerschuldnerschaft des Leistungsempfängers (§ 13b UStG).',
+    emDash: '—',
+    units: {
+      hour: 'Std.',
+      piece: 'Stk.',
+      unit: 'Einh.',
+    },
+  },
 };
 
 const en: LabelBundle = {
@@ -201,6 +243,27 @@ const en: LabelBundle = {
     tax: 'Tax breakdown',
     field: 'Field',
     value: 'Value',
+  },
+  pdf: {
+    billTo: 'Bill to',
+    payee: 'Payee',
+    paymentInfo: 'Payment information',
+    accountHolder: 'Account holder',
+    netSubtotal: 'Net subtotal',
+    vatLabel: 'VAT',
+    totalInclVat: 'Total incl. VAT',
+    amountDue: 'Amount due',
+    paid: 'Paid',
+    rounding: 'Rounding',
+    pageOf: (n, total) => `Page ${n} of ${total}`,
+    footerBrand: 'Generated with Plainvoice · plainvoice.de',
+    reverseChargeNote: 'Reverse charge — customer liable for VAT.',
+    emDash: '—',
+    units: {
+      hour: 'h',
+      piece: 'pcs',
+      unit: 'units',
+    },
   },
 };
 

@@ -22,7 +22,7 @@ const OPTIONS: ReadonlyArray<Option> = [
 export function FormatPicker({
   value,
   onChange,
-  disabledFormats = ['pdf'],
+  disabledFormats = [],
 }: FormatPickerProps) {
   const t = useTranslations('Converter');
   return (
@@ -58,11 +58,6 @@ export function FormatPicker({
                 className="sr-only"
               />
               <span className="font-medium">{t(opt.labelKey)}</span>
-              {disabled ? (
-                <span className="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-900">
-                  {t('comingSoonBadge')}
-                </span>
-              ) : null}
             </label>
           );
         })}

@@ -68,3 +68,9 @@ export function formatCsvRate(value: number, decimal: ',' | '.'): string {
   const fixed = value.toFixed(2);
   return decimal === ',' ? fixed.replace('.', ',') : fixed;
 }
+
+export function formatPercentage(value: number, locale: Locale): string {
+  const fixed = value.toFixed(2);
+  if (locale === 'de') return `${fixed.replace('.', ',')} %`;
+  return `${fixed}%`;
+}
