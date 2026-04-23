@@ -103,6 +103,7 @@ export function Converter({ locale }: ConverterProps) {
   const [format, setFormat] = useState<OutputFormat>('xlsx');
 
   const [csvOptions, setCsvOptions] = useState<CsvOptionsValue>({
+    compatibility: 'modern',
     layout: 'line-items',
     separator: ';',
     decimal: ',',

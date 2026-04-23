@@ -2,11 +2,18 @@ import type { Invoice } from '@/lib/invoice';
 import { invoiceFilename } from './filename';
 import { formatCsvAmount, formatCsvQuantity, formatCsvRate } from './format';
 import { labelsFor } from './labels';
-import type { Converter, CsvOptions, CsvSeparator } from './types';
+import type { Converter, CsvCompatibility, CsvOptions, CsvSeparator } from './types';
 
 const BOM = '\uFEFF';
 const EOL = '\r\n';
 const MIME = 'text/csv;charset=utf-8';
+const LEGACY_NEWLINE_REPLACEMENT = ' · ';
+
+function normalizeForLegacy(value: string): string {
+  return value
+    .replace(/\r\n|\r|\n/g, LEGACY_NEWLINE_REPLACEMENT)
+    .replace(/(\s·\s){2,}/g, LEGACY_NEWLINE_REPLACEMENT);
+}
 
 function needsQuoting(cell: string, separator: CsvSeparator): boolean {
   if (cell.length === 0) return false;
@@ -20,14 +27,25 @@ function quote(cell: string): string {
   return `"${cell.replace(/"/g, '""')}"`;
 }
 
-function encodeCell(value: string | number | null | undefined, separator: CsvSeparator): string {
+function encodeCell(
+  value: string | number | null | undefined,
+  separator: CsvSeparator,
+  compatibility: CsvCompatibility,
+): string {
   if (value === null || value === undefined) return '';
-  const str = String(value);
+  const str =
+    typeof value === 'string' && compatibility === 'legacy'
+      ? normalizeForLegacy(String(value))
+      : String(value);
   return needsQuoting(str, separator) ? quote(str) : str;
 }
 
-function writeRow(cells: Array<string | number | null | undefined>, separator: CsvSeparator): string {
-  return cells.map((c) => encodeCell(c, separator)).join(separator);
+function writeRow(
+  cells: Array<string | number | null | undefined>,
+  separator: CsvSeparator,
+  compatibility: CsvCompatibility,
+): string {
+  return cells.map((c) => encodeCell(c, separator, compatibility)).join(separator);
 }
 
 function lineItemsHeader(locale: 'de' | 'en'): string[] {
@@ -126,24 +144,27 @@ function buildHeaderOnly(invoice: Invoice, options: CsvOptions): string[] {
 }
 
 export const convertCsv: Converter<CsvOptions> = async (invoice, options) => {
-  const { separator, layout, locale } = options;
+  const { separator, layout, locale, compatibility } = options;
   const rows: string[] = [];
 
   if (layout === 'line-items') {
-    rows.push(writeRow(lineItemsHeader(locale), separator));
+    rows.push(writeRow(lineItemsHeader(locale), separator, compatibility));
     for (const row of buildLineItems(invoice, options)) {
-      rows.push(writeRow(row, separator));
+      rows.push(writeRow(row, separator, compatibility));
     }
   } else {
-    rows.push(writeRow(headerOnlyHeader(locale), separator));
-    rows.push(writeRow(buildHeaderOnly(invoice, options), separator));
+    rows.push(writeRow(headerOnlyHeader(locale), separator, compatibility));
+    rows.push(writeRow(buildHeaderOnly(invoice, options), separator, compatibility));
   }
 
   const body = BOM + rows.join(EOL) + EOL;
   const blob = new Blob([body], { type: MIME });
+  const baseName = invoiceFilename(invoice, 'csv', options.fallbackFilename);
+  const filename =
+    compatibility === 'legacy' ? baseName.replace(/\.csv$/, '-legacy.csv') : baseName;
   return {
     blob,
-    filename: invoiceFilename(invoice, 'csv', options.fallbackFilename),
+    filename,
     mimeType: MIME,
     byteSize: blob.size,
   };

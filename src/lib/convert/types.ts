@@ -17,8 +17,10 @@ export interface BaseOptions {
 export type CsvLayout = 'line-items' | 'header-only';
 export type CsvSeparator = ';' | ',' | '\t';
 export type CsvDecimal = ',' | '.';
+export type CsvCompatibility = 'modern' | 'legacy';
 
 export interface CsvOptions extends BaseOptions {
+  compatibility: CsvCompatibility;
   layout: CsvLayout;
   separator: CsvSeparator;
   decimal: CsvDecimal;

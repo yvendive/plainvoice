@@ -1,0 +1,7 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`convertCsv — compatibility modes > legacy mode snapshot — ubl-invoice-standard.xml 1`] = `
+"﻿Rechnungsnummer;Rechnungsdatum;Fälligkeitsdatum;Verkäufer;USt-IdNr. Verkäufer;Käufer;Leitweg-ID / Buyer-Ref;Pos.;Artikel;Beschreibung;Menge;Einheit;Einzelpreis;Netto;USt-Kategorie;USt-Satz %;Währung;Gesamtsumme;Zahlbetrag
+INV-2026-0001;2026-04-22;2026-05-22;Muster Dienstleister GmbH;DE123456789;Beispiel Behörde;04011000-12345-67;1;Beratungsleistung;Beratung zur Einführung von E-Rechnung;4;HUR;50,00;200,00;S;19,00;EUR;238,00;238,00
+"
+`;

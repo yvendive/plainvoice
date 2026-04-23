@@ -7,6 +7,7 @@ describe('parseInvoice → converters — end-to-end shape', () => {
   it.each(FIXTURES)('CSV: %s produces filled ConverterResult', async (name) => {
     const invoice = loadFixture(name);
     const result = await convertCsv(invoice, {
+      compatibility: 'modern',
       locale: 'de',
       layout: 'line-items',
       separator: ';',
