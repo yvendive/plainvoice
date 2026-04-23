@@ -11,7 +11,7 @@ import {
 } from '../layout';
 
 export function drawAllowances(ctx: PdfCtx, cursor: Cursor): Cursor {
-  const { invoice, fonts, theme, locale } = ctx;
+  const { invoice, labels, fonts, theme, locale } = ctx;
   if (invoice.allowancesCharges.length === 0) return cursor;
 
   const { page } = cursor;
@@ -21,7 +21,7 @@ export function drawAllowances(ctx: PdfCtx, cursor: Cursor): Cursor {
     const signedAmount = ac.isCharge ? ac.amount : -ac.amount;
     const label = ac.reason && ac.reason.length > 0
       ? ac.reason
-      : (ac.isCharge ? 'Charge' : 'Discount');
+      : (ac.isCharge ? labels.pdf.chargeFallback : labels.pdf.allowanceFallback);
 
     drawText(page, {
       x: LEFT,

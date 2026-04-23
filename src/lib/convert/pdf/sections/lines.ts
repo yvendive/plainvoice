@@ -1,4 +1,4 @@
-import type { PDFPage } from 'pdf-lib';
+import type { PDFFont, PDFPage } from 'pdf-lib';
 import { formatMoney, formatPercentage, formatQuantity } from '../../format';
 import { drawHorizontalRule, drawRightAlignedText, drawText, wrapText } from '../draw';
 import type { PdfCtx } from '../context';
@@ -22,9 +22,28 @@ import {
 const CELL_INSET = 2;
 const DESC_MAX_WIDTH = COL_WIDTH.description - CELL_INSET;
 
+function assertFits(label: string, font: PDFFont, size: number, width: number, columnName: string): void {
+  if (process.env.NODE_ENV === 'production') return;
+  const measured = font.widthOfTextAtSize(label, size);
+  if (measured > width - 4) {
+    console.warn(
+      `[convertPdf] column header "${label}" (${measured.toFixed(1)}pt) exceeds ${columnName} width (${width}pt)`,
+    );
+  }
+}
+
 function drawColumnHeader(ctx: PdfCtx, page: PDFPage, y: number): void {
   const { labels, fonts, theme } = ctx;
   const C = labels.columns;
+  const PC = labels.pdf.columns;
+
+  assertFits('#', fonts.bold, FONT_SIZE_LABEL, COL_WIDTH.idx, 'idx');
+  assertFits(C.itemDescription, fonts.bold, FONT_SIZE_LABEL, COL_WIDTH.description, 'description');
+  assertFits(C.quantity, fonts.bold, FONT_SIZE_LABEL, COL_WIDTH.qty, 'qty');
+  assertFits(C.unitCode, fonts.bold, FONT_SIZE_LABEL, COL_WIDTH.unit, 'unit');
+  assertFits(PC.unitPrice, fonts.bold, FONT_SIZE_LABEL, COL_WIDTH.unitPrice, 'unitPrice');
+  assertFits(PC.taxPct, fonts.bold, FONT_SIZE_LABEL, COL_WIDTH.taxPct, 'taxPct');
+  assertFits(C.lineNetAmount, fonts.bold, FONT_SIZE_LABEL, COL_WIDTH.net, 'net');
 
   drawText(page, {
     x: COL_LEFT.idx,
@@ -61,7 +80,7 @@ function drawColumnHeader(ctx: PdfCtx, page: PDFPage, y: number): void {
   drawRightAlignedText(page, {
     x: COL_RIGHT.unitPrice - CELL_INSET,
     y,
-    text: C.unitPrice,
+    text: PC.unitPrice,
     font: fonts.bold,
     size: FONT_SIZE_LABEL,
     color: theme.muted,
@@ -69,7 +88,7 @@ function drawColumnHeader(ctx: PdfCtx, page: PDFPage, y: number): void {
   drawRightAlignedText(page, {
     x: COL_RIGHT.taxPct - CELL_INSET,
     y,
-    text: C.taxRate,
+    text: PC.taxPct,
     font: fonts.bold,
     size: FONT_SIZE_LABEL,
     color: theme.muted,

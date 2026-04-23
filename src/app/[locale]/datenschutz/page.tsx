@@ -27,9 +27,12 @@ export default async function PrivacyPage({
 
       <main className="mx-auto w-full max-w-2xl flex-1 px-6 py-10">
         <h1 className="text-3xl font-semibold tracking-tight">{t('title')}</h1>
-        <p className="mt-6 text-base leading-relaxed text-[color:var(--muted-foreground)]">
-          {t('body')}
-        </p>
+        <div className="mt-6 space-y-4 text-base leading-relaxed text-[color:var(--muted-foreground)]">
+          <p>{t('intro')}</p>
+          <p>{t('noUpload')}</p>
+          <p>{t('noTracking')}</p>
+          <p>{t('hosting')}</p>
+        </div>
         <p className="mt-8">
           <Link href={`/${locale}`} className="text-sm underline-offset-4 hover:underline">
             ← {t('back')}

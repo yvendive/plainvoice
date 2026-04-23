@@ -86,6 +86,12 @@ export interface LabelBundle {
       piece: string;
       unit: string;
     };
+    allowanceFallback: string;
+    chargeFallback: string;
+    columns: {
+      taxPct: string;
+      unitPrice: string;
+    };
   };
 }
 
@@ -175,6 +181,12 @@ const de: LabelBundle = {
       piece: 'Stk.',
       unit: 'Einh.',
     },
+    allowanceFallback: 'Rabatt',
+    chargeFallback: 'Zuschlag',
+    columns: {
+      taxPct: 'USt %',
+      unitPrice: 'Einzelpreis',
+    },
   },
 };
 
@@ -263,6 +275,12 @@ const en: LabelBundle = {
       hour: 'h',
       piece: 'pcs',
       unit: 'units',
+    },
+    allowanceFallback: 'Discount',
+    chargeFallback: 'Charge',
+    columns: {
+      taxPct: 'VAT %',
+      unitPrice: 'Unit price',
     },
   },
 };
