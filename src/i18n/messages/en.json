@@ -26,7 +26,6 @@
     "formatXlsx": "Excel (XLSX)",
     "formatCsv": "CSV",
     "formatTxt": "Text (TXT)",
-    "comingSoonBadge": "Coming soon",
     "csvOptions": "CSV options",
     "csvCompatibility": "Compatibility",
     "csvCompatibilityModern": "Modern",
@@ -65,11 +64,15 @@
   },
   "Footer": {
     "privacyLink": "Privacy",
-    "copyright": "© {year} Plainvoice. Open Source (MIT)."
+    "copyright": "© {year} Plainvoice. Open Source (MIT).",
+    "requirements": "Works in all modern browsers. No install, no account, no uploads."
   },
   "Privacy": {
     "title": "Privacy",
-    "body": "This application processes your invoice entirely locally in your browser. No content is transmitted to any server.",
+    "intro": "This application processes your invoice entirely locally in your browser.",
+    "noUpload": "No content is transmitted to any server — neither the XML file nor the generated CSV, TXT, XLSX, or PDF outputs.",
+    "noTracking": "We use no cookies, no analytics, and no tracking. Fonts are served from our own server, not from a third-party CDN.",
+    "hosting": "The site is hosted by easyname GmbH (Austria). The hosting provider records technically necessary access data (IP address, timestamp, requested resource) in log files for operational purposes; these are deleted after a short retention period.",
     "back": "Back"
   },
   "Metadata": {

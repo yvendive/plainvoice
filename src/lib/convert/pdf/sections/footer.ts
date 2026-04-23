@@ -7,7 +7,6 @@ import {
   FOOTER_Y,
   LEFT,
   RIGHT,
-  USABLE_WIDTH,
 } from '../layout';
 
 const DISCLAIMER_Y = 80;
@@ -28,7 +27,6 @@ export function drawReverseChargeDisclaimer(ctx: PdfCtx): void {
     size: FONT_SIZE_BODY,
     color: theme.muted,
   });
-  void USABLE_WIDTH;
 }
 
 export function drawPageFooters(ctx: PdfCtx): void {

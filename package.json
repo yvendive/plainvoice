@@ -13,6 +13,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "icons": "node scripts/generate-icons.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
@@ -44,7 +45,9 @@
     "eslint-config-next": "^15.1.0",
     "eslint-config-prettier": "^9.1.0",
     "jsdom": "^25.0.1",
+    "png-to-ico": "^3.0.1",
     "prettier": "^3.4.2",
+    "sharp": "^0.34.5",
     "tailwindcss": "^4.0.0",
     "typescript": "^5.7.2",
     "vitest": "^2.1.8"

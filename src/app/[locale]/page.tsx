@@ -46,11 +46,14 @@ export default async function LandingPage({
         </p>
       </main>
 
-      <footer className="flex flex-col items-center justify-between gap-3 border-t px-6 py-6 text-sm text-[color:var(--muted-foreground)] md:flex-row md:px-10">
-        <span>{tf('copyright', { year: new Date().getFullYear() })}</span>
-        <Link href={`/${locale}/datenschutz`} className="underline-offset-4 hover:underline">
-          {tf('privacyLink')}
-        </Link>
+      <footer className="flex flex-col items-center gap-3 border-t px-6 py-6 text-sm text-[color:var(--muted-foreground)] md:px-10">
+        <p className="text-center text-xs md:text-sm">{tf('requirements')}</p>
+        <div className="flex w-full flex-col items-center justify-between gap-3 md:flex-row">
+          <span>{tf('copyright', { year: new Date().getFullYear() })}</span>
+          <Link href={`/${locale}/datenschutz`} className="underline-offset-4 hover:underline">
+            {tf('privacyLink')}
+          </Link>
+        </div>
       </footer>
     </div>
   );

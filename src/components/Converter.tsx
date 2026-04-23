@@ -101,7 +101,7 @@ export function Converter({ locale }: ConverterProps) {
   const t = useTranslations('Converter');
   const [status, dispatch] = useReducer(reducer, { kind: 'idle' } as Status);
 
-  const [format, setFormat] = useState<OutputFormat>('xlsx');
+  const [format, setFormat] = useState<OutputFormat>('pdf');
 
   const [csvOptions, setCsvOptions] = useState<CsvOptionsValue>({
     compatibility: 'modern',

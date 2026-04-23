@@ -19,9 +19,36 @@ export async function generateMetadata({
   const { locale } = await params;
   if (!isLocale(locale)) return {};
   const t = await getTranslations({ locale, namespace: 'Metadata' });
+  const baseUrl = 'https://plainvoice.de';
+  const path = `/${locale}`;
   return {
     title: t('title'),
     description: t('description'),
+    metadataBase: new URL(baseUrl),
+    themeColor: '#333F8C',
+    alternates: {
+      canonical: path,
+      languages: {
+        de: '/de',
+        en: '/en',
+        'x-default': '/de',
+      },
+    },
+    openGraph: {
+      title: t('title'),
+      description: t('description'),
+      url: `${baseUrl}${path}`,
+      siteName: 'Plainvoice',
+      locale: locale === 'de' ? 'de_DE' : 'en_GB',
+      type: 'website',
+      images: [{ url: '/og.png', width: 1200, height: 630, alt: t('title') }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: t('title'),
+      description: t('description'),
+      images: ['/og.png'],
+    },
   };
 }
 

@@ -2,10 +2,11 @@ name: Deploy to easyname (production)
 
 # Deploys the static export in ./out to easyname Large Hosting via FTPS.
 # Requires four repo secrets: EASYNAME_HOST, EASYNAME_USER, EASYNAME_PASSWORD,
-# EASYNAME_REMOTE_PATH. Trigger manually via workflow_dispatch until we're
-# ready to auto-deploy on every merge to main.
+# EASYNAME_REMOTE_PATH.
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 jobs:
