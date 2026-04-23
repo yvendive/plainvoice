@@ -3,6 +3,7 @@ export type {
   ConverterResult,
   BaseOptions,
   CsvOptions,
+  CsvCompatibility,
   CsvLayout,
   CsvSeparator,
   CsvDecimal,

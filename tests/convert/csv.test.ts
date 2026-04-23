@@ -20,6 +20,7 @@ describe('convertCsv — line-items layout', () => {
   it('emits BOM, CRLF line endings, header row + one row per line', async () => {
     const invoice = loadFixture('ubl-invoice-standard.xml');
     const { blob } = await convertCsv(invoice, {
+      compatibility: 'modern',
       locale: 'de',
       layout: 'line-items',
       separator: ';',
@@ -35,6 +36,7 @@ describe('convertCsv — line-items layout', () => {
   it('uses localised headers in DE', async () => {
     const invoice = loadFixture('ubl-invoice-standard.xml');
     const { blob } = await convertCsv(invoice, {
+      compatibility: 'modern',
       locale: 'de',
       layout: 'line-items',
       separator: ';',
@@ -49,6 +51,7 @@ describe('convertCsv — line-items layout', () => {
   it('uses localised headers in EN', async () => {
     const invoice = loadFixture('ubl-invoice-standard.xml');
     const { blob } = await convertCsv(invoice, {
+      compatibility: 'modern',
       locale: 'en',
       layout: 'line-items',
       separator: ';',
@@ -65,6 +68,7 @@ describe('convertCsv — line-items layout', () => {
     const comma = await asText(
       (
         await convertCsv(invoice, {
+          compatibility: 'modern',
           locale: 'de',
           layout: 'line-items',
           separator: ';',
@@ -75,6 +79,7 @@ describe('convertCsv — line-items layout', () => {
     const dot = await asText(
       (
         await convertCsv(invoice, {
+          compatibility: 'modern',
           locale: 'en',
           layout: 'line-items',
           separator: ';',
@@ -97,6 +102,7 @@ describe('convertCsv — line-items layout', () => {
       },
     ];
     const { blob } = await convertCsv(invoice, {
+      compatibility: 'modern',
       locale: 'de',
       layout: 'line-items',
       separator: ';',
@@ -113,6 +119,7 @@ describe('convertCsv — line-items layout', () => {
       paymentTermsNote: 'Line 1\nLine 2',
     };
     const { blob } = await convertCsv(invoice, {
+      compatibility: 'modern',
       locale: 'de',
       layout: 'header-only',
       separator: ';',
@@ -125,6 +132,7 @@ describe('convertCsv — line-items layout', () => {
   it('tab separator emits tab characters', async () => {
     const invoice = loadFixture('ubl-invoice-standard.xml');
     const { blob } = await convertCsv(invoice, {
+      compatibility: 'modern',
       locale: 'de',
       layout: 'line-items',
       separator: '\t',
@@ -138,6 +146,7 @@ describe('convertCsv — line-items layout', () => {
     const invoice = loadFixture(name);
     await expect(
       convertCsv(invoice, {
+        compatibility: 'modern',
         locale: 'de',
         layout: 'line-items',
         separator: ';',
@@ -154,6 +163,7 @@ describe('convertCsv — header-only layout', () => {
   it('produces a single data row with header-level amounts', async () => {
     const invoice = loadFixture('ubl-invoice-standard.xml');
     const { blob } = await convertCsv(invoice, {
+      compatibility: 'modern',
       locale: 'de',
       layout: 'header-only',
       separator: ';',
@@ -169,6 +179,7 @@ describe('convertCsv — header-only layout', () => {
   it('repeats the grand total and amount due on each line-items row', async () => {
     const invoice = loadFixture('cii-mixed-rate.xml');
     const { blob } = await convertCsv(invoice, {
+      compatibility: 'modern',
       locale: 'de',
       layout: 'line-items',
       separator: ';',
@@ -181,5 +192,149 @@ describe('convertCsv — header-only layout', () => {
     for (const r of rows) {
       expect(r).toContain(amountDueFormatted);
     }
+  });
+});
+
+describe('convertCsv — compatibility modes', () => {
+  it('modern mode preserves embedded newlines inside quoted fields', async () => {
+    const invoice: Invoice = {
+      ...loadFixture('ubl-invoice-standard.xml'),
+    };
+    invoice.lines = [{ ...invoice.lines[0], description: 'Line A\nLine B' }];
+    const { blob } = await convertCsv(invoice, {
+      compatibility: 'modern',
+      locale: 'de',
+      layout: 'line-items',
+      separator: ';',
+      decimal: ',',
+    });
+    const text = await asText(blob);
+    expect(text).toContain('"Line A\nLine B"');
+  });
+
+  it('legacy mode replaces LF with " · " and the field is not quoted (no separator/quote)', async () => {
+    const invoice: Invoice = {
+      ...loadFixture('ubl-invoice-standard.xml'),
+    };
+    invoice.lines = [{ ...invoice.lines[0], description: 'Line A\nLine B' }];
+    const { blob } = await convertCsv(invoice, {
+      compatibility: 'legacy',
+      locale: 'de',
+      layout: 'line-items',
+      separator: ';',
+      decimal: ',',
+    });
+    const text = await asText(blob);
+    expect(text).toContain('Line A · Line B');
+    expect(text).not.toContain('"Line A');
+  });
+
+  it('legacy mode collapses CRLF and lone CR to " · "', async () => {
+    const invoice: Invoice = {
+      ...loadFixture('ubl-invoice-standard.xml'),
+    };
+    invoice.lines = [
+      { ...invoice.lines[0], description: 'A\r\nB\rC' },
+    ];
+    const { blob } = await convertCsv(invoice, {
+      compatibility: 'legacy',
+      locale: 'de',
+      layout: 'line-items',
+      separator: ';',
+      decimal: ',',
+    });
+    const text = await asText(blob);
+    expect(text).toContain('A · B · C');
+  });
+
+  it('legacy mode squashes runs of three or more newlines to a single " · "', async () => {
+    const invoice: Invoice = {
+      ...loadFixture('ubl-invoice-standard.xml'),
+    };
+    invoice.lines = [{ ...invoice.lines[0], description: 'A\n\n\nB' }];
+    const { blob } = await convertCsv(invoice, {
+      compatibility: 'legacy',
+      locale: 'de',
+      layout: 'line-items',
+      separator: ';',
+      decimal: ',',
+    });
+    const text = await asText(blob);
+    // Three newlines → three replacements → squashed to one ' · '
+    expect(text).toContain('A · B');
+    expect(text).not.toMatch(/·.*·/);
+  });
+
+  it('legacy mode leaves numeric columns byte-identical to modern mode', async () => {
+    const invoice = loadFixture('ubl-invoice-standard.xml');
+    const modernText = await asText(
+      (
+        await convertCsv(invoice, {
+          compatibility: 'modern',
+          locale: 'de',
+          layout: 'line-items',
+          separator: ';',
+          decimal: ',',
+        })
+      ).blob,
+    );
+    const legacyText = await asText(
+      (
+        await convertCsv(invoice, {
+          compatibility: 'legacy',
+          locale: 'de',
+          layout: 'line-items',
+          separator: ';',
+          decimal: ',',
+        })
+      ).blob,
+    );
+    // Extract numeric columns (cols 11–14 are quantity, unitPrice, netAmount, taxRate) from each data row.
+    const numericCols = (row: string) =>
+      row.split(';').slice(10, 14).join(';');
+    const modernRows = rowsOf(modernText).slice(1);
+    const legacyRows = rowsOf(legacyText).slice(1);
+    expect(modernRows.length).toBe(legacyRows.length);
+    for (let i = 0; i < modernRows.length; i++) {
+      expect(numericCols(legacyRows[i]!)).toBe(numericCols(modernRows[i]!));
+    }
+  });
+
+  it('legacy mode appends -legacy to the filename', async () => {
+    const invoice = loadFixture('ubl-invoice-standard.xml');
+    const { filename } = await convertCsv(invoice, {
+      compatibility: 'legacy',
+      locale: 'de',
+      layout: 'line-items',
+      separator: ';',
+      decimal: ',',
+    });
+    expect(filename).toMatch(/-legacy\.csv$/);
+  });
+
+  it('modern mode does not append -legacy to the filename', async () => {
+    const invoice = loadFixture('ubl-invoice-standard.xml');
+    const { filename } = await convertCsv(invoice, {
+      compatibility: 'modern',
+      locale: 'de',
+      layout: 'line-items',
+      separator: ';',
+      decimal: ',',
+    });
+    expect(filename).toMatch(/\.csv$/);
+    expect(filename).not.toContain('-legacy');
+  });
+
+  it('legacy mode snapshot — ubl-invoice-standard.xml', async () => {
+    const invoice = loadFixture('ubl-invoice-standard.xml');
+    const { blob } = await convertCsv(invoice, {
+      compatibility: 'legacy',
+      locale: 'de',
+      layout: 'line-items',
+      separator: ';',
+      decimal: ',',
+    });
+    const text = await asText(blob);
+    expect(text).toMatchSnapshot();
   });
 });

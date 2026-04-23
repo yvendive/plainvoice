@@ -50,15 +50,16 @@ export function RadioGroup({
 export interface RadioGroupItemProps extends React.InputHTMLAttributes<HTMLInputElement> {
   value: string;
   label?: React.ReactNode;
+  hint?: React.ReactNode;
 }
 
 export const RadioGroupItem = React.forwardRef<HTMLInputElement, RadioGroupItemProps>(
-  function RadioGroupItem({ className, value, label, id, ...props }, ref) {
+  function RadioGroupItem({ className, value, label, hint, id, ...props }, ref) {
     const ctx = React.useContext(RadioGroupContext);
     if (!ctx) throw new Error('RadioGroupItem must be used inside RadioGroup');
     const inputId = id ?? `${ctx.name}-${value}`;
     return (
-      <label htmlFor={inputId} className="flex cursor-pointer items-center gap-2 text-sm">
+      <label htmlFor={inputId} className="flex cursor-pointer items-start gap-2 text-sm">
         <input
           ref={ref}
           id={inputId}
@@ -68,12 +69,17 @@ export const RadioGroupItem = React.forwardRef<HTMLInputElement, RadioGroupItemP
           checked={ctx.value === value}
           onChange={() => ctx.onChange(value)}
           className={cn(
-            'h-4 w-4 accent-[color:var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]',
+            'mt-0.5 h-4 w-4 accent-[color:var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]',
             className,
           )}
           {...props}
         />
-        {label}
+        <span>
+          <span className="block">{label}</span>
+          {hint ? (
+            <span className="block text-xs text-[color:var(--muted-foreground)]">{hint}</span>
+          ) : null}
+        </span>
       </label>
     );
   },
