@@ -9,6 +9,7 @@ import {
   type Locale,
   type OutputFormat,
   convertCsv,
+  convertPdf,
   convertTxt,
   convertXlsx,
 } from '@/lib/convert';
@@ -154,6 +155,8 @@ export function Converter({ locale }: ConverterProps) {
         result = await convertTxt(status.invoice, { locale, fallbackFilename });
       } else if (format === 'xlsx') {
         result = await convertXlsx(status.invoice, { locale, fallbackFilename });
+      } else if (format === 'pdf') {
+        result = await convertPdf(status.invoice, { locale, fallbackFilename });
       } else {
         throw new Error(`format ${format} not implemented`);
       }
@@ -237,7 +240,7 @@ export function Converter({ locale }: ConverterProps) {
         <Button
           size="lg"
           onClick={handleConvert}
-          disabled={isGenerating || format === 'pdf'}
+          disabled={isGenerating}
           aria-busy={isGenerating}
         >
           {isGenerating ? (

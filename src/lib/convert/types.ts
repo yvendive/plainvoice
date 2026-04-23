@@ -28,6 +28,7 @@ export interface CsvOptions extends BaseOptions {
 
 export type TxtOptions = BaseOptions;
 export type XlsxOptions = BaseOptions;
+export type PdfOptions = BaseOptions;
 
 export type Converter<O extends BaseOptions> = (
   invoice: Invoice,

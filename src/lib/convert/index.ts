@@ -9,6 +9,7 @@ export type {
   CsvDecimal,
   TxtOptions,
   XlsxOptions,
+  PdfOptions,
   Locale,
   OutputFormat,
 } from './types';
@@ -18,3 +19,4 @@ export { labelsFor } from './labels';
 export { convertCsv } from './csv';
 export { convertTxt } from './txt';
 export { convertXlsx } from './xlsx';
+export { convertPdf } from './pdf';
