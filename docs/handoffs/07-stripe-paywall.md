@@ -578,17 +578,27 @@ Then: announce on HN, /r/de_buchhaltung, DACH dev Slack, X.
 
 ## Stripe test-mode artifacts (pre-created for P1)
 
-These are already provisioned in Stripe sandbox mode (account `acct_1TQrJMLJIGoQ4ULV`, "YS Development B.V. sandbox"). Code can paste them straight into Wrangler test secrets at P1 kickoff.
+These are already provisioned in Stripe sandbox mode (account `acct_1TQrJMLJIGoQ4ULV`, "YS Development B.V. sandbox").
 
 | Var | Value |
 | --- | --- |
 | Stripe account ID | `acct_1TQrJMLJIGoQ4ULV` |
 | Product ID | `prod_UPh1bz3Pccn79X` (name: "Plainvoice Pro") |
-| `STRIPE_PRICE_ID` (test) | `price_1TQrvNLJIGoQ4ULVse5c7P7X` (€39 EUR, one-time, `type: "one_time"`) |
-| `STRIPE_SECRET_KEY` (test) | `sk_test_…` — fetch from [Stripe Dashboard → API keys](https://dashboard.stripe.com/test/apikeys) at kickoff |
-| `STRIPE_WEBHOOK_SECRET` (test) | created at P1 step where the Worker URL is known; signing secret comes from Dashboard → Webhooks → endpoint detail |
+| `STRIPE_PRICE_ID` (test) | `price_1TQrvNLJIGoQ4ULVse5c7P7X` (€39 EUR, one-time) |
+| Webhook endpoint ID | `we_1TQw3HLJIGoQ4ULVg9fyCjgt` (events: `checkout.session.completed`) |
 
 Live-mode equivalents are NOT created yet — that happens at P4 alongside Stripe Tax + OSS registration.
+
+## Deployed P1 artifacts (canonical inputs for P2)
+
+P1 shipped successfully: PR yvendive/plainvoice-pay#1 merged + green CI/deploy on commit `a8c1080`. End-to-end test passed (real Stripe checkout → KV write → Resend email → verify round-trip).
+
+| Var | Value |
+| --- | --- |
+| `NEXT_PUBLIC_WORKER_URL` (test) | `https://plainvoice-pay.yvendive.workers.dev` |
+| `/api/checkout` | POST `{ email, locale, consentWaiver: true, consentTimestamp }` → `{ url }` |
+| `/api/verify` | POST `{ key }` → `{ valid: boolean }` |
+| Worker subdomain owner | `yvendive.workers.dev` (account-level; survives across Worker projects) |
 
 ## Pricing experiments parked for post-launch A/B
 
