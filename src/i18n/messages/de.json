@@ -78,5 +78,28 @@
   "Metadata": {
     "title": "Plainvoice — X-Rechnung Konverter",
     "description": "Konvertieren Sie X-Rechnung XML in CSV, TXT, XLSX oder PDF — direkt in Ihrem Browser. Kostenlos, Open Source, datenschutzfreundlich."
+  },
+  "Bulk": {
+    "title": "Mehrere Rechnungen",
+    "detected": "{count} Dateien erkannt.",
+    "tooMany": "Maximal 50 Dateien pro Vorgang.",
+    "tooLarge": "Zusammen maximal 100 MB.",
+    "unzipping": "ZIP wird entpackt …",
+    "fileStatusQueued": "Wartend",
+    "fileStatusParsing": "Wird gelesen …",
+    "fileStatusReady": "Bereit",
+    "fileStatusError": "Fehler",
+    "progress": "{ready} von {total} bereit",
+    "convertAll": "Alle konvertieren",
+    "downloadAll": "Alle als ZIP herunterladen",
+    "partialErrorsNote": "Einige Dateien konnten nicht gelesen werden (siehe _errors.txt).",
+    "allFailed": "Keine der Dateien konnte gelesen werden."
+  },
+  "ProGate": {
+    "title": "Pro-Funktion",
+    "body": "Bulk-Konvertierung ist Teil von Plainvoice Pro — für alle, die regelmäßig viele Rechnungen verarbeiten.",
+    "price": "€39 einmalig",
+    "ctaComingSoon": "Bald verfügbar",
+    "availabilityHint": "Startet in den nächsten Wochen. Kein Abo, keine wiederkehrenden Kosten."
   }
 }

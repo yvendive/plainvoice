@@ -3,40 +3,42 @@
 import { useCallback, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
-
-const MAX_BYTES = 10 * 1024 * 1024;
+import { collectFromDrop, collectFromInput, type BulkInputResult } from '@/lib/bulk/collect';
 
 export interface FileDropZoneProps {
-  onFile: (file: File) => void;
-  onTooBig: (file: File) => void;
+  onFiles: (result: BulkInputResult) => void;
+  onLimitError: (kind: 'too-many' | 'too-large') => void;
   disabled?: boolean;
 }
 
-export function FileDropZone({ onFile, onTooBig, disabled = false }: FileDropZoneProps) {
+export function FileDropZone({ onFiles, onLimitError, disabled = false }: FileDropZoneProps) {
   const t = useTranslations('Converter');
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [dragActive, setDragActive] = useState(false);
 
-  const handleFiles = useCallback(
-    (files: FileList | null) => {
-      if (disabled || !files || files.length === 0) return;
-      const file = files[0];
-      if (file.size > MAX_BYTES) {
-        onTooBig(file);
-        return;
-      }
-      onFile(file);
+  const handleResult = useCallback(
+    (result: BulkInputResult) => {
+      if (result.files.length === 0 && result.errors.length === 0) return;
+      onFiles(result);
     },
-    [disabled, onFile, onTooBig],
+    [onFiles],
   );
 
   const onDrop = useCallback(
-    (event: React.DragEvent<HTMLDivElement>) => {
+    async (event: React.DragEvent<HTMLDivElement>) => {
       event.preventDefault();
       setDragActive(false);
-      handleFiles(event.dataTransfer.files);
+      if (disabled) return;
+      try {
+        const result = await collectFromDrop(event.dataTransfer);
+        handleResult(result);
+      } catch (err: unknown) {
+        if (err instanceof Error && err.name === 'BulkLimitError') {
+          onLimitError((err as Error & { kind: string }).kind as 'too-many' | 'too-large');
+        }
+      }
     },
-    [handleFiles],
+    [disabled, handleResult, onLimitError],
   );
 
   const onDragOver = useCallback((event: React.DragEvent<HTMLDivElement>) => {
@@ -59,6 +61,23 @@ export function FileDropZone({ onFile, onTooBig, disabled = false }: FileDropZon
       }
     },
     [disabled, openPicker],
+  );
+
+  const onInputChange = useCallback(
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
+      const list = event.target.files;
+      event.target.value = '';
+      if (!list || list.length === 0) return;
+      try {
+        const result = await collectFromInput(list);
+        handleResult(result);
+      } catch (err: unknown) {
+        if (err instanceof Error && err.name === 'BulkLimitError') {
+          onLimitError((err as Error & { kind: string }).kind as 'too-many' | 'too-large');
+        }
+      }
+    },
+    [handleResult, onLimitError],
   );
 
   return (
@@ -91,13 +110,11 @@ export function FileDropZone({ onFile, onTooBig, disabled = false }: FileDropZon
       <input
         ref={inputRef}
         type="file"
-        accept=".xml,application/xml,text/xml"
+        accept=".xml,.zip,application/xml,text/xml,application/zip"
+        multiple
         className="sr-only"
         disabled={disabled}
-        onChange={(event) => {
-          handleFiles(event.target.files);
-          event.target.value = '';
-        }}
+        onChange={onInputChange}
       />
     </div>
   );
