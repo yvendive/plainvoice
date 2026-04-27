@@ -14,5 +14,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${base}/en/impressum`, lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
     { url: `${base}/de/agb`, lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
     { url: `${base}/en/agb`, lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
+    { url: `${base}/de/buy`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
+    { url: `${base}/en/buy`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
+    { url: `${base}/de/unlock`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
+    { url: `${base}/en/unlock`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
+    // /unlocked is intentionally excluded (transactional, noindex)
   ];
 }

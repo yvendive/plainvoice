@@ -26,6 +26,9 @@ const ALLOWED_IDENTICAL: ReadonlyArray<string> = [
   // Proper noun (company name) and external URL — language-neutral
   'Impressum.legalName',
   'Impressum.odrLink',
+  // Buy page: product name + price are language-neutral
+  'Buy.title',       // "Plainvoice Pro"
+  'Buy.priceAmount', // "€39"
 ];
 
 function flatten(obj: Record<string, unknown>, prefix = ''): Record<string, string> {

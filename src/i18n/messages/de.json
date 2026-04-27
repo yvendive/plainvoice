@@ -181,6 +181,37 @@
     "body": "Bulk-Konvertierung ist Teil von Plainvoice Pro — für alle, die regelmäßig viele Rechnungen verarbeiten.",
     "price": "€39 einmalig",
     "ctaComingSoon": "Demnächst verfügbar",
-    "availabilityHint": "Erscheint in den nächsten Wochen. Keine Abonnements, keine wiederkehrenden Kosten."
+    "availabilityHint": "Erscheint in den nächsten Wochen. Keine Abonnements, keine wiederkehrenden Kosten.",
+    "cta": "€39 — jetzt kaufen"
+  },
+  "Buy": {
+    "title": "Plainvoice Pro",
+    "subtitle": "Mehrere Rechnungen auf einmal konvertieren.",
+    "priceAmount": "€39",
+    "priceCadence": "Einmalig — keine Abo-Kosten, keine Folgegebühren.",
+    "priceVat": "Inkl. gesetzlicher Umsatzsteuer.",
+    "emailLabel": "E-Mail-Adresse für die Lizenz",
+    "emailPlaceholder": "ihre@adresse.de",
+    "emailInvalid": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
+    "consentLabel": "Ich stimme ausdrücklich zu, dass die Lieferung des digitalen Inhalts sofort nach Vertragsschluss beginnt, und ich bestätige, dass ich dadurch mein Widerrufsrecht verliere. (Siehe AGB § 6.)",
+    "buyButton": "Jetzt für €39 kaufen",
+    "errorGeneric": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
+    "back": "Zurück"
+  },
+  "Unlocked": {
+    "title": "Vielen Dank!",
+    "body": "Ihre Zahlung war erfolgreich. Wir haben Ihnen Ihren Lizenzschlüssel soeben per E-Mail geschickt. Bitte prüfen Sie auch den Spam-Ordner.",
+    "cta": "Lizenzschlüssel jetzt eingeben →"
+  },
+  "Unlock": {
+    "title": "Pro aktivieren",
+    "body": "Fügen Sie Ihren Lizenzschlüssel ein. Sie haben ihn nach dem Kauf per E-Mail erhalten.",
+    "keyPlaceholder": "Ihr Lizenzschlüssel",
+    "activateButton": "Aktivieren",
+    "stateVerifying": "Wird geprüft …",
+    "stateSuccess": "Aktiviert. Sie werden weitergeleitet …",
+    "errorInvalid": "Schlüssel ungültig oder bereits revoziert.",
+    "errorNetwork": "Verbindung fehlgeschlagen — bitte versuchen Sie es erneut.",
+    "back": "Zurück"
   }
 }

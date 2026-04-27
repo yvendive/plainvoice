@@ -2,9 +2,9 @@ import { describe, expect, it } from 'vitest';
 import sitemap from '@/app/sitemap';
 
 describe('sitemap', () => {
-  it('returns exactly eight entries', () => {
+  it('returns exactly twelve entries', () => {
     const entries = sitemap();
-    expect(entries).toHaveLength(8);
+    expect(entries).toHaveLength(12);
   });
 
   it('contains the home page URLs', () => {
@@ -31,14 +31,29 @@ describe('sitemap', () => {
     expect(urls).toContain('https://plainvoice.de/en/agb');
   });
 
-  it('home pages have higher priority than legal pages', () => {
+  it('contains the buy URLs', () => {
+    const urls = sitemap().map((e) => e.url);
+    expect(urls).toContain('https://plainvoice.de/de/buy');
+    expect(urls).toContain('https://plainvoice.de/en/buy');
+  });
+
+  it('contains the unlock URLs', () => {
+    const urls = sitemap().map((e) => e.url);
+    expect(urls).toContain('https://plainvoice.de/de/unlock');
+    expect(urls).toContain('https://plainvoice.de/en/unlock');
+  });
+
+  it('does NOT contain /unlocked (transactional, noindex)', () => {
+    const urls = sitemap().map((e) => e.url);
+    expect(urls.some((u) => u.includes('/unlocked'))).toBe(false);
+  });
+
+  it('home pages have higher priority than legal/commerce pages', () => {
     const entries = sitemap();
     const de = entries.find((e) => e.url === 'https://plainvoice.de/de')!;
+    const buy = entries.find((e) => e.url === 'https://plainvoice.de/de/buy')!;
     const ds = entries.find((e) => e.url === 'https://plainvoice.de/de/datenschutz')!;
-    const imp = entries.find((e) => e.url === 'https://plainvoice.de/de/impressum')!;
-    const agb = entries.find((e) => e.url === 'https://plainvoice.de/de/agb')!;
+    expect(de.priority).toBeGreaterThan(buy.priority!);
     expect(de.priority).toBeGreaterThan(ds.priority!);
-    expect(de.priority).toBeGreaterThan(imp.priority!);
-    expect(de.priority).toBeGreaterThan(agb.priority!);
   });
 });
