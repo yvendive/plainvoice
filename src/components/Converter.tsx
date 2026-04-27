@@ -352,7 +352,7 @@ export function Converter({ locale }: ConverterProps) {
   if (status.kind === 'bulk-done') {
     return (
       <div className="flex w-full flex-col items-center gap-4 rounded-xl border px-8 py-10 text-center">
-        <p className="text-base font-semibold">{tb('downloadAll')}</p>
+        <p className="text-base font-semibold">{tb('doneTitle')}</p>
         {status.hadErrors && (
           <p className="text-xs text-[color:var(--muted-foreground)]">{tb('partialErrorsNote')}</p>
         )}

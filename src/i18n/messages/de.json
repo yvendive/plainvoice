@@ -92,6 +92,7 @@
     "progress": "{ready} von {total} bereit",
     "convertAll": "Alle konvertieren",
     "downloadAll": "Alle als ZIP herunterladen",
+    "doneTitle": "Fertig — ZIP heruntergeladen.",
     "partialErrorsNote": "Einige Dateien konnten nicht gelesen werden (siehe _errors.txt).",
     "allFailed": "Keine der Dateien konnte gelesen werden."
   },
