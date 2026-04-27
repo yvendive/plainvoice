@@ -50,9 +50,11 @@ export default async function LandingPage({
         <p className="text-center text-xs md:text-sm">{tf('requirements')}</p>
         <div className="flex w-full flex-col items-center justify-between gap-3 md:flex-row">
           <span>{tf('copyright', { year: new Date().getFullYear() })}</span>
-          <Link href={`/${locale}/datenschutz`} className="underline-offset-4 hover:underline">
-            {tf('privacyLink')}
-          </Link>
+          <nav className="flex gap-4">
+            <Link href={`/${locale}/impressum`} className="underline-offset-4 hover:underline">{tf('impressumLink')}</Link>
+            <Link href={`/${locale}/agb`} className="underline-offset-4 hover:underline">{tf('termsLink')}</Link>
+            <Link href={`/${locale}/datenschutz`} className="underline-offset-4 hover:underline">{tf('privacyLink')}</Link>
+          </nav>
         </div>
       </footer>
     </div>

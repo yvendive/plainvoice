@@ -18,15 +18,15 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   if (!isLocale(locale)) return {};
-  const t = await getTranslations({ locale, namespace: 'Privacy' });
+  const t = await getTranslations({ locale, namespace: 'Agb' });
   return {
     title: `${t('title')} — Plainvoice`,
     robots: { index: true, follow: true },
-    alternates: { canonical: `/${locale}/datenschutz` },
+    alternates: { canonical: `/${locale}/agb` },
   };
 }
 
-export default async function PrivacyPage({
+export default async function AgbPage({
   params,
 }: {
   params: Promise<{ locale: string }>;
@@ -35,24 +35,45 @@ export default async function PrivacyPage({
   if (!isLocale(locale)) notFound();
   setRequestLocale(locale);
 
-  const t = await getTranslations('Privacy');
+  const t = await getTranslations('Agb');
   const tApp = await getTranslations('App');
   const tf = await getTranslations('Footer');
 
   const lastUpdated = new Date().toISOString().slice(0, 10);
 
-  const sections = [
+  const sections: Array<{ heading: string; body?: string; extra?: React.ReactNode }> = [
     { heading: t('s1Heading'), body: t('s1Body') },
     { heading: t('s2Heading'), body: t('s2Body') },
     { heading: t('s3Heading'), body: t('s3Body') },
     { heading: t('s4Heading'), body: t('s4Body') },
     { heading: t('s5Heading'), body: t('s5Body') },
-    { heading: t('s6Heading'), body: t('s6Body') },
+    {
+      heading: t('s6Heading'),
+      extra: (
+        <div className="space-y-4">
+          <p>{t('s6Intro')}</p>
+          <div>
+            <h3 className="mb-1 font-medium text-[color:var(--foreground)]">{t('s6RightHeading')}</h3>
+            <p className="whitespace-pre-line">{t('s6RightBody')}</p>
+          </div>
+          <div>
+            <h3 className="mb-1 font-medium text-[color:var(--foreground)]">{t('s6ConsequencesHeading')}</h3>
+            <p className="whitespace-pre-line">{t('s6ConsequencesBody')}</p>
+          </div>
+          <div>
+            <h3 className="mb-1 font-medium text-[color:var(--foreground)]">{t('s6ExpiryHeading')}</h3>
+            <p className="whitespace-pre-line">{t('s6ExpiryBody')}</p>
+          </div>
+        </div>
+      ),
+    },
     { heading: t('s7Heading'), body: t('s7Body') },
     { heading: t('s8Heading'), body: t('s8Body') },
     { heading: t('s9Heading'), body: t('s9Body') },
     { heading: t('s10Heading'), body: t('s10Body') },
     { heading: t('s11Heading'), body: t('s11Body') },
+    { heading: t('s12Heading'), body: t('s12Body') },
+    { heading: t('s13Heading'), body: t('s13Body') },
   ];
 
   return (
@@ -72,7 +93,7 @@ export default async function PrivacyPage({
           {sections.map((s, i) => (
             <section key={i}>
               <h2 className="mb-2 text-lg font-semibold text-[color:var(--foreground)]">{s.heading}</h2>
-              <div className="space-y-3">{renderParagraphs(s.body)}</div>
+              {s.extra ?? (s.body ? renderParagraphs(s.body) : null)}
             </section>
           ))}
         </div>
