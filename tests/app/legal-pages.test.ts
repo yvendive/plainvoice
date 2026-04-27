@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { COMPANY } from '@/lib/legal/company';
+import { COMPANY, LEGAL_LAST_UPDATED } from '@/lib/legal/company';
 import deMessages from '@/i18n/messages/de.json';
 import enMessages from '@/i18n/messages/en.json';
 
@@ -94,5 +94,16 @@ describe('Footer i18n — three links present', () => {
     expect(enMessages.Footer.impressumLink).toBeTruthy();
     expect(enMessages.Footer.termsLink).toBeTruthy();
     expect(enMessages.Footer.privacyLink).toBeTruthy();
+  });
+});
+
+describe('LEGAL_LAST_UPDATED', () => {
+  it('is a YYYY-MM-DD string', () => {
+    expect(LEGAL_LAST_UPDATED).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+  });
+
+  it('is not in the future', () => {
+    const today = new Date().toISOString().slice(0, 10);
+    expect(LEGAL_LAST_UPDATED <= today).toBe(true);
   });
 });

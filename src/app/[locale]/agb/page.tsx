@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { isLocale } from '@/i18n/config';
 import { LanguageToggle } from '@/components/LanguageToggle';
+import { LEGAL_LAST_UPDATED } from '@/lib/legal/company';
 
 function renderParagraphs(text: string) {
   return text.split('\n\n').map((p, i) => (
@@ -39,7 +40,7 @@ export default async function AgbPage({
   const tApp = await getTranslations('App');
   const tf = await getTranslations('Footer');
 
-  const lastUpdated = new Date().toISOString().slice(0, 10);
+  const lastUpdated = LEGAL_LAST_UPDATED;
 
   const sections: Array<{ heading: string; body?: string; extra?: React.ReactNode }> = [
     { heading: t('s1Heading'), body: t('s1Body') },
