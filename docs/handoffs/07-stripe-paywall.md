@@ -576,6 +576,20 @@ Then: announce on HN, /r/de_buchhaltung, DACH dev Slack, X.
 | Stripe account | New, registered under **YS Development B.V.** (required for VAT + OSS) |
 | Refund policy | Keep §6 waiver as drafted (immediate-execution → loss of withdrawal right) |
 
+## Stripe test-mode artifacts (pre-created for P1)
+
+These are already provisioned in Stripe sandbox mode (account `acct_1TQrJMLJIGoQ4ULV`, "YS Development B.V. sandbox"). Code can paste them straight into Wrangler test secrets at P1 kickoff.
+
+| Var | Value |
+| --- | --- |
+| Stripe account ID | `acct_1TQrJMLJIGoQ4ULV` |
+| Product ID | `prod_UPh1bz3Pccn79X` (name: "Plainvoice Pro") |
+| `STRIPE_PRICE_ID` (test) | `price_1TQrvNLJIGoQ4ULVse5c7P7X` (€39 EUR, one-time, `type: "one_time"`) |
+| `STRIPE_SECRET_KEY` (test) | `sk_test_…` — fetch from [Stripe Dashboard → API keys](https://dashboard.stripe.com/test/apikeys) at kickoff |
+| `STRIPE_WEBHOOK_SECRET` (test) | created at P1 step where the Worker URL is known; signing secret comes from Dashboard → Webhooks → endpoint detail |
+
+Live-mode equivalents are NOT created yet — that happens at P4 alongside Stripe Tax + OSS registration.
+
 ## Pricing experiments parked for post-launch A/B
 
 Each of these is documented here so the moment metrics come in (conversion rate, refund rate, support volume, geographic mix), we have a list to pull from rather than reinventing the question.
