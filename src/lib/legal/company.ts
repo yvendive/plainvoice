@@ -11,3 +11,10 @@ export const COMPANY = {
   kvk: '93236867',
   vatId: 'NL866322887B01',
 } as const;
+
+/**
+ * Bump this whenever the AGB or Datenschutz text changes (NOT for
+ * code changes to the legal pages, only for text content).
+ * ISO date string YYYY-MM-DD.
+ */
+export const LEGAL_LAST_UPDATED = '2026-04-27';
