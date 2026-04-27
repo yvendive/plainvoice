@@ -55,4 +55,10 @@ describe('collectFromInput', () => {
     expect(err.name).toBe('BulkLimitError');
     expect(err instanceof Error).toBe(true);
   });
+
+  it('handles a File[] (post-snapshot of FileList) identically to a FileList', async () => {
+    const arr: File[] = [makeFile('a.xml'), makeFile('b.xml')];
+    const result = await collectFromInput(arr);
+    expect(result.files).toHaveLength(2);
+  });
 });

@@ -65,11 +65,13 @@ export function FileDropZone({ onFiles, onLimitError, disabled = false }: FileDr
 
   const onInputChange = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
-      const list = event.target.files;
+      const filesArray = event.target.files
+        ? Array.from(event.target.files)
+        : [];
       event.target.value = '';
-      if (!list || list.length === 0) return;
+      if (filesArray.length === 0) return;
       try {
-        const result = await collectFromInput(list);
+        const result = await collectFromInput(filesArray);
         handleResult(result);
       } catch (err: unknown) {
         if (err instanceof Error && err.name === 'BulkLimitError') {
