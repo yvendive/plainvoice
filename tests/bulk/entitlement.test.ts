@@ -1,5 +1,5 @@
 import { describe, expect, it, beforeEach } from 'vitest';
-import { isPro, lockPro } from '@/lib/pro/entitlement';
+import { isPro, lockPro, getStoredLicenseKey } from '@/lib/entitlement';
 
 function setSearch(search: string) {
   Object.defineProperty(window, 'location', {
@@ -8,7 +8,7 @@ function setSearch(search: string) {
   });
 }
 
-describe('isPro / lockPro', () => {
+describe('isPro / lockPro / getStoredLicenseKey', () => {
   beforeEach(() => {
     localStorage.clear();
     setSearch('');
@@ -26,7 +26,7 @@ describe('isPro / lockPro', () => {
   it('persists pro status to localStorage when ?pro=1', () => {
     setSearch('?pro=1');
     isPro();
-    expect(localStorage.getItem('plainvoice_pro')).toBe('1');
+    expect(localStorage.getItem('plainvoice.pro')).toBe('1');
   });
 
   it('returns true from localStorage after page nav (no query param)', () => {
@@ -36,7 +36,7 @@ describe('isPro / lockPro', () => {
     expect(isPro()).toBe(true);
   });
 
-  it('lockPro() removes localStorage key', () => {
+  it('lockPro() removes localStorage pro key', () => {
     setSearch('?pro=1');
     isPro();
     lockPro();
@@ -44,8 +44,24 @@ describe('isPro / lockPro', () => {
     expect(isPro()).toBe(false);
   });
 
+  it('lockPro() also removes the stored license key', () => {
+    localStorage.setItem('plainvoice.pro', '1');
+    localStorage.setItem('plainvoice.pro.key', 'some-key');
+    lockPro();
+    expect(localStorage.getItem('plainvoice.pro.key')).toBeNull();
+  });
+
   it('ignores ?pro=0', () => {
     setSearch('?pro=0');
     expect(isPro()).toBe(false);
+  });
+
+  it('getStoredLicenseKey() returns null when no key is stored', () => {
+    expect(getStoredLicenseKey()).toBeNull();
+  });
+
+  it('getStoredLicenseKey() returns the stored key', () => {
+    localStorage.setItem('plainvoice.pro.key', 'abc-123');
+    expect(getStoredLicenseKey()).toBe('abc-123');
   });
 });

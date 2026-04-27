@@ -181,6 +181,37 @@
     "body": "Bulk conversion is part of Plainvoice Pro — for anyone processing many invoices regularly.",
     "price": "€39 one-time",
     "ctaComingSoon": "Coming soon",
-    "availabilityHint": "Launching in the coming weeks. No subscription, no recurring fees."
+    "availabilityHint": "Launching in the coming weeks. No subscription, no recurring fees.",
+    "cta": "€39 — buy now"
+  },
+  "Buy": {
+    "title": "Plainvoice Pro",
+    "subtitle": "Convert multiple invoices at once.",
+    "priceAmount": "€39",
+    "priceCadence": "One-time — no subscription, no recurring fees.",
+    "priceVat": "Incl. applicable VAT.",
+    "emailLabel": "Email address for the licence",
+    "emailPlaceholder": "your@address.com",
+    "emailInvalid": "Please enter a valid email address.",
+    "consentLabel": "I expressly agree that delivery of the digital content starts immediately after the contract is concluded, and I acknowledge that I thereby lose my right of withdrawal. (See Terms §6.)",
+    "buyButton": "Buy now for €39",
+    "errorGeneric": "Something went wrong. Please try again.",
+    "back": "Back"
+  },
+  "Unlocked": {
+    "title": "Thank you!",
+    "body": "Your payment was successful. We have just sent your licence key by email. Please also check your spam folder.",
+    "cta": "Enter licence key now →"
+  },
+  "Unlock": {
+    "title": "Activate Pro",
+    "body": "Paste your licence key. You received it by email after your purchase.",
+    "keyPlaceholder": "Your licence key",
+    "activateButton": "Activate",
+    "stateVerifying": "Verifying …",
+    "stateSuccess": "Activated. Redirecting …",
+    "errorInvalid": "Key invalid or already revoked.",
+    "errorNetwork": "Connection failed — please try again.",
+    "back": "Back"
   }
 }
