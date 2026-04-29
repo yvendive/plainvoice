@@ -8,6 +8,21 @@ Operational rules for any AI agent (Cowork PM/PO Claude, Code, or successor) wor
 - **Code (Claude Code)** — reads briefs, scaffolds, implements, tests, opens PRs. Owns code quality. Stays inside the assigned repo for the assigned phase.
 - **Yves** — final say, runs commits/pushes locally, owns money/legal/account decisions (Stripe, OSS, lawyer review, bank).
 
+## Handoff briefs
+
+Process rule for Cowork PM → Code handoffs. Yves flagged repeated violations of this on 2026-04-29; the rule exists because the pattern was implicit and I kept slipping back to chat-inlined specs.
+
+1. **Implementation specs go in the repo, not in chat.** Any work brief longer than ~10 lines — a multi-step implementation, an audit playbook, a triage doc, a phase plan — is written as a markdown file in `docs/handoffs/` (or `docs/security/` for security artifacts) and committed before Code is invoked. The Cowork → Code chat prompt is a SHORT pointer: "Read `<path>` and execute. Stop if any prerequisite is missing." Three reasons:
+   - The brief survives Cowork session compaction; chat history does not.
+   - Future agents (resumed sessions, new Cowork projects, second-pass reviewers) can re-read it.
+   - The brief is reviewable / commentable in the repo before Code starts work.
+
+2. **Naming convention.** Milestone handoffs use `NN-name.md` (e.g., `07-stripe-paywall.md`). Sub-phase or task briefs under a milestone use `Mx-purpose.md` (e.g., `M7-prelaunch-worker-hardening.md`). Audit artifacts (playbooks, reports, triage docs) live in `docs/security/` with date-stamped filenames where relevant.
+
+3. **Exception: trivial one-step fixes.** If the work fits in one paragraph and one tool call (e.g., "add a missing label, push, done"), an inline instruction is fine. Threshold: if you'd need to copy-paste it again in a follow-up session to get the same result, write the file.
+
+4. **Chat prompt shape is fixed.** Pointer to the brief, pointer to `AGENTS.md`, pointer to any prerequisite files or GitHub issues, optional setup/branch commands, "stop and ask" trigger conditions, "when done" reply format. Specifications belong in the brief, not the prompt.
+
 ## Git hygiene
 
 These rules exist because we hit divergence on the M7 P2 cleanup. They prevent it.
