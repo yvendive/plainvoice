@@ -213,5 +213,10 @@
     "errorInvalid": "Schlüssel ungültig oder bereits revoziert.",
     "errorNetwork": "Verbindung fehlgeschlagen — bitte versuchen Sie es erneut.",
     "back": "Zurück"
+  },
+  "Errors": {
+    "fileTooLarge": "Datei zu groß",
+    "xmlSizeLimit": "Diese XML-Datei überschreitet das Limit von 5 MB pro Datei. Bitte laden Sie eine kleinere Datei hoch.",
+    "xmlEntityDeclarationsForbidden": "XML mit Entity-Deklarationen wird aus Sicherheitsgründen abgelehnt."
   }
 }
