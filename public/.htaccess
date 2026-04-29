@@ -1,0 +1,16 @@
+# Plainvoice — easyname Apache static-export hardening
+#
+# This file is copied verbatim from public/.htaccess into out/.htaccess by
+# `next build`, then uploaded to the FTPS root by .github/workflows/deploy.yml.
+#
+# CSP rationale and the unsafe-inline trade-off are documented in
+# docs/security/csp-decisions.md. Issue: yvendive/plainvoice#18.
+
+<IfModule mod_headers.c>
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' https://js.stripe.com 'unsafe-inline'; frame-src https://js.stripe.com https://hooks.stripe.com; connect-src 'self' https://plainvoice-pay.yvendive.workers.dev https://api.stripe.com; img-src 'self' data:; font-src 'self'; style-src 'self' 'unsafe-inline'; frame-ancestors 'none'; base-uri 'self'; form-action 'self' https://checkout.stripe.com"
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+  Header always set X-Frame-Options "DENY"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+</IfModule>
