@@ -23,6 +23,17 @@ Process rule for Cowork PM → Code handoffs. Yves flagged repeated violations o
 
 4. **Chat prompt shape is fixed.** Recommended model (see "Model selection" below), pointer to the brief, pointer to `AGENTS.md`, pointer to any prerequisite files or GitHub issues, optional setup/branch commands, "stop and ask" trigger conditions, "when done" reply format. Specifications belong in the brief, not the prompt.
 
+5. **Code self-commits the handoff brief before executing.** This overrides Git-hygiene rule #1 for the specific case of files Cowork PM wrote to `docs/handoffs/` and named in the chat prompt. The motivation: Yves was tired of the manual commit cycle between "Cowork PM writes brief" and "Code reads brief." With this rule, Yves runs ONE command (the chat prompt) and Code handles brief commit + execution end-to-end. Procedure Code follows on first action:
+   - Run `git status --short -- <exact brief path>` to confirm the brief is untracked or modified.
+   - Run `git status --short` (whole repo) to confirm NO other unrelated changes are pending. If anything else shows up, STOP and ask Yves before committing — don't sweep up unrelated work.
+   - Run `git checkout main && git pull origin main` first to ensure the commit lands on the latest tip.
+   - `git add <exact brief path>` (no wildcards, no `git add -A`).
+   - `git diff --cached --stat` and confirm only the brief is staged.
+   - Commit with message `docs(handoff): <brief filename without extension>`, push to `origin/main`.
+   - THEN read the brief and execute.
+
+   This rule applies only to handoff briefs in `docs/handoffs/`. AGENTS.md edits, security audits, triage docs, and other non-brief tracked-file changes still follow Git-hygiene rule #1 (Yves commits manually).
+
 ## Model selection
 
 Every Code handoff declares the recommended model. Two places it appears:

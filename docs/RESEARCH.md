@@ -133,22 +133,57 @@ All client-side friendly, all permissively licensed, no runtime server dependenc
 
 ## 8. Competitive landscape
 
-| Tool | URL | Format(s) | Browser-only? | Free? | Gap we fill |
-| --- | --- | --- | --- | --- | --- |
-| B2Brouter E-Rechnung Viewer | b2brouter.net | PDF view | No (upload) | Yes | We give downloadable CSV/XLSX/TXT, not just PDF view |
-| Invoice-Portal | invoice-portal.de | Viewer + Validator | Mostly | Yes (some) | We add XLSX/CSV outputs |
-| invoice-converter.com | invoice-converter.com | XML/PDF/UBL/CII | Claims yes | Freemium | Direct competitor; we differentiate on open-source + i18n |
-| spiketime.de | spiketime.de | Create (XML+PDF) | No | Yes | They create, we consume |
-| Perfect E-Rechnung | perfekt-e-rechnung.de | All formats | No (desktop) | Paid | We're free and browser-only |
-| OpenXRechnungToolbox | github.com/jcthiele/OpenXRechnungToolbox | Viewer + Validator | No (desktop, Java) | OSS | We're web-first and reach non-technical users |
-| PDF24 / xrechnung-erstellen.com | various | Generators | Mixed | Yes | Opposite direction |
+**Pricing snapshot:** 28 April 2026. All prices in € (net unless noted), per German vendor pages. SaaS prices are list prices — most vendors run rolling 30–60 % "first months" promotions that we ignore here. Enterprise networks are quoted "auf Anfrage" and we do not invent numbers.
 
-**Differentiation for v1:**
+We split the field into three buckets: (a) direct *converter / viewer* tools that compete head-on with our scope, (b) accounting / invoicing SaaS that include X-Rechnung handling as one feature among many, and (c) enterprise e-invoicing networks. Bucket (a) is where we have to differentiate on craft; bucket (b) is what most SMEs already pay for; bucket (c) is irrelevant to our target user but worth naming so we don't pretend the market starts and ends with us.
 
-1. Browser-only (privacy) — **the main selling point in DACH / EU where GDPR matters.**
-2. Four downloadable formats from a single upload.
-3. Open source (MIT) → builds trust; tax advisors can self-host.
-4. Bilingual DE/EN from day one.
+### 8.1 Direct competitors — XML viewers, validators, converters
+
+| Tool | One-line positioning | Pricing (April 2026) | Source |
+| --- | --- | --- | --- |
+| **PDF24 Tools** (pdf24.org) | Browser PDF toolbox; added a free X-Rechnung / ZUGFeRD generator and viewer | **Free**, ad-supported, no account | [tools.pdf24.org/de/elektronische-rechnung-erstellen](https://tools.pdf24.org/de/elektronische-rechnung-erstellen) |
+| **OpenXRechnungToolbox** (jcthiele) | Java desktop GUI: viewer, validator, Leitweg-ID calculator | **Free, GPL v3** | [github.com/jcthiele/OpenXRechnungToolbox](https://github.com/jcthiele/OpenXRechnungToolbox) |
+| **ZUGFeRD-Manager** (OpenIndex) | Open-source desktop creator/validator for ZUGFeRD (also unwraps the embedded XML) | **Free, OSS** | [github.com/OpenIndex/ZUGFeRD-Manager](https://github.com/OpenIndex/ZUGFeRD-Manager) |
+| **invoice-portal.de** | Web viewer + KoSIT-grade validator, Peppol receipt | **Receipt plans from €15/mo** (tiered by invoice volume); free validator UI | [invoice-portal.de/prices-receive-e-invoice/](https://invoice-portal.de/prices-receive-e-invoice/) |
+| **invoice-converter.com** | "AI" PDF→X-Rechnung conversion + viewer | Subscription, **3-day free trial requires credit card**; tier prices not published on the site | [invoice-converter.com/en](https://www.invoice-converter.com/en) |
+| **Perfect E-Rechnung** (Soft-Xpansion, x-re.de) | Windows desktop creator from Excel/Word/PDF; not a viewer | **€36 / year** (subscription) or older v1 at **€49.99 one-off / €19.99 yr**; 14-day trial | [soft-xpansion.de/products/perfect-pdf-12/erechnung/](https://soft-xpansion.de/products/perfect-pdf-12/erechnung/) |
+| **EinfachX** (einfach-xrechnung.de) | Hosted X-Rechnung suite: creator, supplier portal, viewer | **Viewer €34.90/yr**; Creator **€12.49 / €29.90 / €84.90 per month** (100 / 300 / 1 000 invoices/yr); Inbound **€13.90 per user/mo**; all + VAT | [einfach-xrechnung.de/en/products/](https://einfach-xrechnung.de/en/products/) |
+| **B2Brouter** | Peppol access point + invoice viewer | **Free Basic** (< 10 contacts); **Professional from ~€10/mo**; Enterprise on request | [b2brouter.net/global/prices/](https://www.b2brouter.net/global/prices/) |
+| **xrechnung-erstellen.com** | Online generator + PDF→XML helper | **Generator free**; advanced/AI features priced via separate "Preise und Lizenzen" page (no flat list disclosed) | [xrechnung-erstellen.com/preise-und-lizenzen](https://xrechnung-erstellen.com/preise-und-lizenzen) |
+| **Markt+Technik eRechnung Viewer** | Windows desktop viewer | **Pricing on request**; sold via mut.de and Amazon | [mut.de/products/erechnung-viewer](https://mut.de/products/erechnung-viewer) |
+| **Ultramarin eRechnung Viewer** | Offline-first desktop viewer (privacy angle) | **Pricing on request** | [ultramarinviewer.de](https://www.ultramarinviewer.de/) |
+
+Notes: of the *free* options, none match our scope simultaneously — PDF24 is generator-leaning and ad-supported, the two OSS desktops require Java/JVM installs and ship no XLSX/CSV export, and `invoice-portal.de`'s free surface is the validator, not a multi-format export. The only fully-free, browser-only, DE/EN, multi-format converter we can find is the gap we're filling.
+
+### 8.2 Adjacent — accounting & invoicing SaaS that include X-Rechnung
+
+These don't sell "view this XML" as the product; they bundle X-Rechnung support inside an invoicing/accounting suite. SMEs that already pay one of these will not pay us, but they're also not the audience we're after (recipients without a suite, freelancers, tax advisors who get a one-off XML in the inbox).
+
+| Vendor | Positioning | Pricing tiers (monthly list, € net) | X-Rechnung scope | Source |
+| --- | --- | --- | --- | --- |
+| **lexoffice / Lexware Office** | Market-leading German SMB cloud accounting (Haufe Group) | **S** (price gated), **M €5.95**, **L €9.95**, **XL €32.90** | Receipt + ZUGFeRD across plans; **full X-Rechnung issuing only on XL** | [lexware.de/preise](https://www.lexware.de/preise/) ([summary](https://trusted.de/lexware-lexoffice-kosten)) |
+| **sevDesk** | Cloud accounting + invoicing, X-Rechnung-ready by default | **Free** (3 e-invoices/mo); paid from **€8.90/mo**; full invoicing/accounting tiers ~€12.90 / €25.90 / €34.90 | X-Rechnung + ZUGFeRD send/receive **included in every paid tier**, no surcharge | [sevdesk.de/e-rechnung-software/](https://sevdesk.de/e-rechnung-software/) |
+| **easybill** | SMB cloud invoicing, focused on shop / Amazon / DATEV exports | **Free** (50 docs/mo, 3 customers); **Starter**, **Professional from €29/mo (€21 annual)**, **Premium from €35/mo (€30 annual)** | X-Rechnung + ZUGFeRD **in all plans incl. Free** | [easybill.de/en/pricing](https://www.easybill.de/en/pricing) |
+| **FastBill** | Cloud invoicing for freelancers and SMBs | **Solo €10 (€9 annual)**, **Plus €15 (€14)**, **Pro €30 (€27)**, **Premium from €59** | X-Rechnung create + receive **in all tiers** | [fastbill.com/preise](https://www.fastbill.com/preise) |
+| **Billomat** | Cloud invoicing + expense tracking (Sage) | **From €29/mo** base, up to **€119/mo** enterprise; 14-day trial | X-Rechnung + ZUGFeRD in all paid tiers | [billomat.com/en/pricing/](https://www.billomat.com/en/pricing/) |
+| **DATEV E-Rechnungsplattform** | DATEV's national receive/dispatch hub, used by most German tax advisors | **Free until 30 June 2026**. From 1 July 2026: receipt always free; dispatch from non-DATEV systems **€0.50 / outgoing invoice**; optional E-Rechnungsschreibung **€5 / year** | View, archive, dispatch — bundled with the broader DATEV stack | [datev.de — Mitte 2026 release](https://www.datev.de/web/de/berufsgruppenuebergreifend/nachrichten/datev-e-rechnungsplattform-kostenfrei-bis-mitte-2026) |
+| **spiketime** | Time-tracking / freelancer billing tool (the original "free e-invoice generator" hook) | E-invoice generator **free**; full SaaS tiers from a few € / user / mo | Generator only; consumes time entries → XRechnung/ZUGFeRD output | [spiketime.de/erechnung-kostenlos-erstellen](https://www.spiketime.de/erechnung-kostenlos-erstellen) |
+
+### 8.3 Enterprise e-invoicing networks (out of scope, listed for completeness)
+
+Pagero (now part of Thomson Reuters), Tradeshift, and Basware all support X-Rechnung as one syntax inside global Peppol/AP platforms. None publish list pricing — quotes are negotiated per buyer/supplier volume and integration. Sources: [pagero.com](https://www.pagero.com/), [tradeshift.com](https://www.tradeshift.com/), [basware.com/en/solutions/e-invoicing-network/](https://www.basware.com/en/solutions/e-invoicing-network/). They don't compete for our user; we mention them so the landscape isn't read as "everything except us is a desktop tool."
+
+### 8.4 Differentiation for v1
+
+The pricing scan tightens, rather than weakens, the case for a free browser converter:
+
+1. **Browser-only privacy** — still the cleanest GDPR story in DACH. Every paid tool above either uploads or installs.
+2. **Four downloadable formats from one upload** — PDF24 stops at PDF, the OSS desktops stop at validation/visualization, the SaaS suites assume you live inside their UI. Nobody else gives a tax advisor "drop the XML, get a CSV/XLSX/TXT/PDF, close the tab."
+3. **Open source (MIT)** — tax advisors and `Steuerkanzleien` can self-host or vendor-pin; B2Brouter Basic and PDF24 are gratis but closed.
+4. **Bilingual DE/EN from day one** — the German-only desktop tools (Perfect E-Rechnung, EinfachX, OpenXRechnungToolbox) leave non-German recipients stranded; the SaaS suites have English UIs but assume you're already a customer.
+5. **No account, no email, no trial wall** — invoice-converter.com requires a credit card for its 3-day trial; every SaaS in §8.2 either gates the relevant tier or makes you create a tenant. Our user can finish the job in under a minute.
+
+What we should *not* claim: that we're cheaper than free SaaS tiers (sevDesk, easybill, B2Brouter, DATEV all have one), or that we replace an accounting suite. We replace the *single act* of opening an X-Rechnung you didn't ask for.
 
 ## 9. GDPR & privacy
 

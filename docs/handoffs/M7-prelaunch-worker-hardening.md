@@ -1,5 +1,7 @@
 # M7 pre-launch — Worker security hardening (PR-2)
 
+**Model:** Claude Opus 4.6 — work touches payment webhook, license issuance, KV writes, Stripe API; security-sensitive bundle warrants the top tier. If you started Code on Sonnet, switch via `/model opus` before the first commit.
+
 Bundle of five Worker security fixes from the 2026-04-29 pre-launch pentest review. All five are launch-blockers; ship as one PR against `yvendive/plainvoice-pay`.
 
 Source artifacts:
