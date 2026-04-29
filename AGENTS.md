@@ -21,7 +21,26 @@ Process rule for Cowork PM → Code handoffs. Yves flagged repeated violations o
 
 3. **Exception: trivial one-step fixes.** If the work fits in one paragraph and one tool call (e.g., "add a missing label, push, done"), an inline instruction is fine. Threshold: if you'd need to copy-paste it again in a follow-up session to get the same result, write the file.
 
-4. **Chat prompt shape is fixed.** Pointer to the brief, pointer to `AGENTS.md`, pointer to any prerequisite files or GitHub issues, optional setup/branch commands, "stop and ask" trigger conditions, "when done" reply format. Specifications belong in the brief, not the prompt.
+4. **Chat prompt shape is fixed.** Recommended model (see "Model selection" below), pointer to the brief, pointer to `AGENTS.md`, pointer to any prerequisite files or GitHub issues, optional setup/branch commands, "stop and ask" trigger conditions, "when done" reply format. Specifications belong in the brief, not the prompt.
+
+## Model selection
+
+Every Code handoff declares the recommended model. Two places it appears:
+
+- **The brief** has a "Model" line near the top (e.g., `Model: Claude Opus 4.6`).
+- **The chat prompt** re-states it so Yves can launch Code with the right `--model` flag, or switch mid-session via `/model <name>` if he started on a different tier.
+
+Default tiers for Plainvoice:
+
+| Tier | Use for |
+| --- | --- |
+| **Opus** | Security review, payment code, license-issuance changes, multi-file refactors, audit playbook execution, anything touching the Worker's webhook / verify / KV writes. |
+| **Sonnet** | Feature implementation, routine fixes, frontend UI work, test additions, doc updates. |
+| **Haiku** | Trivial scripted tasks: label creation, mechanical find-and-replace, doc reformatting, batched `gh` calls from a list. |
+
+When in doubt: default Sonnet, escalate to Opus mid-session if the task turns out harder than expected. Don't default Opus everywhere — cost compounds. Don't default Haiku for anything that touches application logic — quality drops.
+
+If a brief doesn't specify a model, that's a Cowork PM bug; flag it back and pick from the table above based on the work's surface.
 
 ## Git hygiene
 
@@ -46,6 +65,8 @@ These rules exist because we hit divergence on the M7 P2 cleanup. They prevent i
 2. **Surface deviations from the brief explicitly.** When Code calls out a deviation in the PR body, treat that as the start of the review, not the end. Reason about whether the deviation is correct, document why in the verdict, and ask for an inline comment in the code if future contributors might un-do the deviation.
 
 3. **Read the tests.** The brief's acceptance criteria are claims; the tests are evidence. Always read at least one test from each new spec area to confirm the assertion shape matches the requirement.
+
+4. **Run lint + typecheck against the branch before approving.** Code's "all tests pass" claim is about tests; it is not a CI-pass claim. Lint and typecheck failures look invisible to a code-read review (unused vars, misplaced `@ts-expect-error`, etc.) but block CI. Cowork Claude runs at minimum `pnpm lint` and `pnpm typecheck` (or repo equivalents) on the PR branch before delivering an approve verdict. If the sandbox can't run them (missing node_modules, native deps don't resolve), say so in the verdict and either fix the sandbox or wait for Code to confirm CI green. Never approve a red-CI PR without an explicit "CI is failing because X, fix coming" rider.
 
 ## i18n parity invariant
 
