@@ -75,7 +75,7 @@ Cowork Claude defaults to test mode for any new Stripe MCP action and explicitly
 
 ## When to engage a real lawyer
 
-Plainvoice ships v1 without an upfront lawyer review of AGB / Datenschutz (path-3 decision, 2026-04-27). Instead, AGB and Datenschutz were template-derived (Trusted Shops Legal or eRecht24) and shipped behind beta framing + a generous refund stance. See `docs/handoffs/07-stripe-paywall.md` Phase 3 for the full rationale.
+Plainvoice ships v1 without an upfront lawyer review of AGB / Datenschutz (path-3 decision, 2026-04-27). Instead, AGB and Datenschutz were template-derived (**IT-Recht Kanzlei Starter Schutzpaket**, €9.90/mo, monthly cancellable, booked 2026-04-29 — Trusted Shops Legal was blocked because their signup is DACH-domicile only and we're a Dutch BV) and shipped **DE-only** (no EN legal pages — `/en/*` legal routes redirect to `/de/*`; product UI stays bilingual) behind beta framing + a generous refund stance. See `docs/handoffs/07-stripe-paywall.md` Phase 3 for the full rationale.
 
 **Engage a Dutch/German e-commerce IT-Recht lawyer for a 1–2 hour formal review** (~€300–600 budget) when ANY of the following fires:
 

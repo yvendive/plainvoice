@@ -55,7 +55,7 @@ These choices are picked for cost, EU compliance, and time-to-launch. Push back 
 | --- | --- | --- | --- |
 | P1 — Worker backend | Code | `plainvoice-pay` repo with 3 endpoints, KV bindings, env-var contract | Stripe **test-mode** end-to-end: pay with `4242…`, license email arrives via Resend, `/api/verify` returns OK |
 | P2 — Frontend buy/unlock flow | Code | `/buy`, `/unlock`, `/unlocked` pages + isPro extension | Paying via test card unlocks bulk on the static site |
-| P3 — Legal self-cert (template-driven) | Yves + Cowork + Code | Trusted Shops Legal / eRecht24 templates generated; diff-applied to AGB + Datenschutz + Widerrufsbelehrung; beta framing on `/buy`; revenue tripwire documented | Template diff merged + tripwire in `AGENTS.md` (no lawyer signoff for v1; see P3 section below) |
+| P3 — Legal self-cert (template-driven, DE-only) | Yves + Cowork + Code | IT-Recht Kanzlei Starter Schutzpaket templates generated; diff-applied to AGB + Datenschutz + Widerrufsbelehrung; `/en/*` legal routes redirected to `/de/*`; beta framing on `/buy`; revenue tripwire documented | Template diff merged + tripwire in `AGENTS.md` (no lawyer signoff for v1; see P3 section below) |
 | P4 — Stripe Tax + OSS | Yves | NL OSS registration done; Stripe Tax enabled in dashboard; Stripe in live mode | First real-money €1 test with personal card → invoice generated |
 | P5 — Soft launch | Yves | Tweet / HN / DACH dev channels; monitor first 10 customers manually | First paid conversion through to bulk-export ZIP |
 
@@ -507,16 +507,25 @@ NEXT_PUBLIC_WORKER_URL=https://plainvoice-pay.workers.dev
 
 ## P3a — Generate templates (Yves)
 
-Pick one tool. My recommendation: **Trusted Shops Legal** (~€69/mo, sign up + cancel after one month). Their AGB is the de-facto SMB standard in Germany.
+**Vendor: IT-Recht Kanzlei Starter Schutzpaket** (€9.90/mo, monthly cancellable, booked 2026-04-29).
 
-Alternatives: eRecht24 Premium (~€19/mo) or IT-Recht Kanzlei (~€10/mo). Cheaper, slightly less thorough.
+Why not Trusted Shops Legal: their signup blocks NL-domiciled companies at the country picker (DE/AT/CH only). IT-Recht Kanzlei is a Munich e-commerce specialist law firm whose general AGB product is built for sellers serving the German market regardless of seller domicile.
 
-Run the wizard. Inputs:
+**Scope: DE-only legal pages.** EN legal pages are dropped — `/en/agb`, `/en/widerruf`, `/en/datenschutz`, `/en/impressum` redirect to their `/de/*` equivalents. Plainvoice's audience is by definition DE-tax-adjacent (X-Rechnung is mandatory only for German B2B/public-sector e-invoicing) so the EN UI without EN legal text is a defensible product decision and removes the translation-drift maintenance burden every time IT-Recht updates a template. Product pages (`/buy`, `/unlock`, `/unlocked`) and the license email stay bilingual.
+
+Wizard configuration (in IT-Recht Kanzlei's Mandantenportal, after their signup confirmation arrives):
+- Vertragslaufzeit: **Monatlich kündbar** (already correct in screenshot)
+- Rechtstext: under "Besondere Geschäftsmodelle" pick **"Online-Shop (digitale Inhalte)"** — NOT "Onlineshop DE" (that's physical goods) and NOT "Shop - Verkauf von eigener Software" (that's downloadable executables, wrong fit for browser SaaS)
+- Sprache: Deutsch only (no EN add-on — see scope decision above)
+
+Inputs to fill in the Rechtstext config wizard:
 - Company: YS Development B.V., Prins Hendrikplein 8, 2264 SL Leidschendam, NL
 - KvK 93236867, VAT NL866322887B01
-- Business model: digital downloads, one-time payment via Stripe
+- Business model: digital content (Plainvoice Pro license unlocks browser-based bulk conversion of X-Rechnung XML to CSV/TXT/XLSX/PDF)
 - Audience: B2C + B2B
-- Key feature to enable: **Widerrufsbelehrung mit Muster-Widerrufsformular für digitale Inhalte** (the immediate-execution waiver variant)
+- Key feature to enable: **Widerrufsbelehrung mit Muster-Widerrufsformular für digitale Inhalte** (the immediate-execution waiver variant — §356(5) BGB)
+
+If the wizard rejects "Niederlande" as Sitz des Unternehmens: stop, screenshot, and email IT-Recht Kanzlei sales (`info@it-recht-kanzlei.de`) before paying. Fallback vendor: Händlerbund (EU-wide, confirmed multi-domicile-friendly).
 
 Outputs to save to `docs/legal-templates/` in the frontend repo (or paste to Cowork directly):
 - `agb.md` (or `agb.pdf` + extracted text)
@@ -532,18 +541,27 @@ Cowork Claude reads the templates, diffs section-by-section against the merged `
 
 Output: `m7-p3-template-driven-revisions` PR draft against the frontend repo.
 
-## P3c — Beta framing + email Widerrufsformular link (Code)
+## P3c — Beta framing + email Widerrufsformular link + DE-only legal routing (Code)
 
-Two small frontend changes:
+Three frontend changes:
 
 1. **Beta badge** on `/[locale]/buy` and `/[locale]/unlocked`. Subtle inline copy:
    - DE: "Plainvoice Pro ist im Early-Access. Probleme? Schreiben Sie uns an info@plain-cards.com — wir kümmern uns."
    - EN: "Plainvoice Pro is in early access. Issues? Email info@plain-cards.com and we'll make it right."
 
-2. **Muster-Widerrufsformular** link in:
-   - The license email template (DE + EN), below the steps section
-   - `/[locale]/unlock`, in a small footer link
-   - A new static page `/[locale]/widerruf` with the model form text + a `mailto:info@plain-cards.com?subject=Widerruf%20Plainvoice%20Pro` link
+2. **Muster-Widerrufsformular** at `/de/widerruf` (DE only) with the model form text + a `mailto:info@plain-cards.com?subject=Widerruf%20Plainvoice%20Pro` link. Linked from:
+   - The license email template (DE: direct link; EN: same `/de/widerruf` link labelled "(in German)")
+   - `/[locale]/unlock`, in a small footer link (EN locale labels it "(in German)")
+
+3. **DE-only legal page routing.** Drop the EN legal pages and redirect their routes to the DE equivalents:
+   - `/en/agb` → `/de/agb`
+   - `/en/datenschutz` → `/de/datenschutz`
+   - `/en/widerruf` → `/de/widerruf`
+   - `/en/impressum` → `/de/impressum`
+   - Implementation: Next.js `redirects()` in `next.config.ts`, or `notFound()` + client redirect on the EN page bodies, whichever ships cleaner with the static export.
+   - Footer in EN locale links directly to `/de/agb`, `/de/datenschutz`, `/de/impressum` and labels each "(German)" so users know what they're clicking into.
+   - `/buy` consent checkbox in EN locale: link text becomes `AGB (in German)` and `Widerrufsbelehrung (in German)`; both link to `/de/*`.
+   - Remove any EN legal-text translation keys from `en.json` (the parity test shouldn't fire for legal copy because the corresponding DE keys must also be removed if they were under a shared namespace — Code triages whether keys are page-scoped or shared).
 
 Belt-and-braces — even if §6 waiver is ticked, customers always have a clear path to exercise it.
 
@@ -607,13 +625,15 @@ Then: announce on HN, /r/de_buchhaltung, DACH dev Slack, X.
 
 Replaces the previous lawyer-review checklist per the 2026-04-27 path-3 decision.
 
-- [ ] P3a: Trusted Shops Legal (or equivalent) account created, wizard run with Plainvoice's BV details + digital-content + immediate-execution-waiver settings
+- [x] P3a: IT-Recht Kanzlei Starter Schutzpaket booked (€9.90/mo, monthly cancellable, 2026-04-29). Awaiting Mandantenportal access.
+- [ ] P3a: Wizard run with "Online-Shop (digitale Inhalte)" Rechtstext + BV details + B2C+B2B + immediate-execution-waiver settings
 - [ ] P3a: Generated AGB / Datenschutz / Widerrufsbelehrung saved to `docs/legal-templates/` in the frontend repo
 - [ ] P3b: Cowork Claude has produced a section-by-section diff vs. the merged drafts and opened `m7-p3-template-driven-revisions` PR
 - [ ] P3b: PR merged (Code applies the diff; Cowork reviews against the brief)
 - [ ] P3c: Beta framing copy added to `/[locale]/buy` + `/[locale]/unlocked` (DE + EN)
-- [ ] P3c: Muster-Widerrufsformular drafted, added as `/[locale]/widerruf` page, linked from email + `/unlock`
-- [ ] P3c: Email template DE + EN updated to include Widerrufsformular link
+- [ ] P3c: Muster-Widerrufsformular drafted, added as `/de/widerruf` (DE only), linked from email + `/unlock`
+- [ ] P3c: Email template DE + EN updated to include Widerrufsformular link (EN labels it "(in German)")
+- [ ] P3c: `/en/*` legal routes redirect to `/de/*`; EN footer + checkout consent links updated with "(in German)" labels
 - [ ] P3d: Tripwire policy in `AGENTS.md` (€1k revenue / 25 customers / first complaint)
 - [ ] P3d: Operational refund policy documented (no-questions-asked 30-day until tripwire)
 - [ ] Datenschutz expanded to include Resend (US, SCCs) — should already be in template output
@@ -630,6 +650,8 @@ When the tripwire fires (post-launch), open `docs/handoffs/09-lawyer-review.md` 
 | `plainvoice-pay` repo visibility | **Public** — symmetry with MIT frontend; secrets live in Wrangler, not in code; serves as trust signal |
 | Stripe account | New, registered under **YS Development B.V.** (required for VAT + OSS) |
 | Refund policy | Keep §6 waiver as drafted (immediate-execution → loss of withdrawal right) |
+| Legal-template vendor | **IT-Recht Kanzlei Starter Schutzpaket** (€9.90/mo, monthly cancellable, booked 2026-04-29). Trusted Shops Legal blocked NL BVs at signup. |
+| Legal page locale scope | **DE only.** EN routes (`/en/agb`, `/en/widerruf`, `/en/datenschutz`, `/en/impressum`) redirect to DE equivalents. Audience is DE-tax-adjacent by definition; eliminates translation-drift maintenance. |
 
 ## Stripe test-mode artifacts (pre-created for P1)
 
