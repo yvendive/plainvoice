@@ -73,6 +73,26 @@ The Plainvoice paywall ships in **two phases** of liveness:
 
 Cowork Claude defaults to test mode for any new Stripe MCP action and explicitly flags when an action would touch live mode.
 
+## When to engage a real lawyer
+
+Plainvoice ships v1 without an upfront lawyer review of AGB / Datenschutz (path-3 decision, 2026-04-27). Instead, AGB and Datenschutz were template-derived (Trusted Shops Legal or eRecht24) and shipped behind beta framing + a generous refund stance. See `docs/handoffs/07-stripe-paywall.md` Phase 3 for the full rationale.
+
+**Engage a Dutch/German e-commerce IT-Recht lawyer for a 1–2 hour formal review** (~€300–600 budget) when ANY of the following fires:
+
+1. **First €1,000 in cumulative paid revenue** (across all customers, lifetime).
+2. **First 25 paid customers** (across all customers, lifetime).
+3. **First customer complaint, refund dispute, chargeback, or Abmahnung** (warning letter from a competitor, consumer protection org, or law firm) — whichever comes first.
+
+The lawyer review is not optional once any tripwire fires. Don't argue with the rule by saying "it's a friendly customer" or "the complaint is silly." The point of the rule is that revenue + complaint volume both grow the legal blast radius, and at that point professional review is cheaper than its alternatives.
+
+Until a tripwire fires, the operational policy is:
+
+- **No-questions-asked refund within 30 days of purchase**, regardless of the AGB §6 waiver checkbox. Process via Stripe Dashboard.
+- **No active enforcement of the §6 waiver.** A customer disputing within 14 days gets a refund without challenge.
+- **Track every refund + complaint in `docs/operations/refund-log.md`** so the lawyer engagement (when it happens) starts from real data.
+
+Open `docs/handoffs/09-lawyer-review.md` when a tripwire fires — that brief should describe the trigger, the questions for the lawyer, and the expected output.
+
 ## Memory
 
 When the Cowork "Plainvoice" project is created, copy the rules above into project memory. Until then, this file is the source of truth.

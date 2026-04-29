@@ -55,7 +55,7 @@ These choices are picked for cost, EU compliance, and time-to-launch. Push back 
 | --- | --- | --- | --- |
 | P1 — Worker backend | Code | `plainvoice-pay` repo with 3 endpoints, KV bindings, env-var contract | Stripe **test-mode** end-to-end: pay with `4242…`, license email arrives via Resend, `/api/verify` returns OK |
 | P2 — Frontend buy/unlock flow | Code | `/buy`, `/unlock`, `/unlocked` pages + isPro extension | Paying via test card unlocks bulk on the static site |
-| P3 — Legal updates | Yves + lawyer + Code | AGB §6 checkbox copy lock-in, Datenschutz Resend addition, invoice template | Lawyer signoff (separate task before P4) |
+| P3 — Legal self-cert (template-driven) | Yves + Cowork + Code | Trusted Shops Legal / eRecht24 templates generated; diff-applied to AGB + Datenschutz + Widerrufsbelehrung; beta framing on `/buy`; revenue tripwire documented | Template diff merged + tripwire in `AGENTS.md` (no lawyer signoff for v1; see P3 section below) |
 | P4 — Stripe Tax + OSS | Yves | NL OSS registration done; Stripe Tax enabled in dashboard; Stripe in live mode | First real-money €1 test with personal card → invoice generated |
 | P5 — Soft launch | Yves | Tweet / HN / DACH dev channels; monitor first 10 customers manually | First paid conversion through to bulk-export ZIP |
 
@@ -501,21 +501,66 @@ NEXT_PUBLIC_WORKER_URL=https://plainvoice-pay.workers.dev
 
 ---
 
-# Phase 3 — Legal updates
+# Phase 3 — Legal self-cert (template-driven, no lawyer for v1)
 
-Out of Code's scope until lawyer review is done. Yves drives this.
+**Decision (2026-04-27):** Skip the upfront human-lawyer review for v1. Use commercial AGB/Datenschutz template generators as a cross-check, ship behind beta framing + a generous refund stance, and engage a real lawyer when the revenue tripwire fires (see AGENTS.md). Trade-off: defers ~€500 in lawyer fees, accepts marginally higher Abmahnung exposure that's recoverable for ~€500–1500 if it ever materializes. Defensible at pre-revenue stage.
 
-**Pre-lawyer prep:**
-- Send the lawyer: `docs/handoffs/04-5-legal.md` + the merged AGB + Datenschutz pages + this M7 brief (specifically §P2.1 buy page checkbox copy + §P1.4 email templates).
-- Specific questions for the lawyer:
-  1. Is the §6 waiver checkbox copy adequate under §356(5) BGB and Art. 16(m) Consumer Rights Directive?
-  2. Does the email-only license-key delivery satisfy "Bestätigung des Vertrags auf einem dauerhaften Datenträger" per §312f BGB?
-  3. Do we need a separate Widerrufsformular (model withdrawal form) link in the email and on the unlock page?
-  4. With Stripe Tax + OSS, is the invoice template Stripe auto-generates compliant with §14 UStG / Dutch invoicing rules?
+## P3a — Generate templates (Yves)
 
-**After signoff:**
-- Open `docs/handoffs/08-legal-checkbox.md` brief for Code with any text changes the lawyer requested.
-- Update `LEGAL_LAST_UPDATED` in `src/lib/legal/company.ts`.
+Pick one tool. My recommendation: **Trusted Shops Legal** (~€69/mo, sign up + cancel after one month). Their AGB is the de-facto SMB standard in Germany.
+
+Alternatives: eRecht24 Premium (~€19/mo) or IT-Recht Kanzlei (~€10/mo). Cheaper, slightly less thorough.
+
+Run the wizard. Inputs:
+- Company: YS Development B.V., Prins Hendrikplein 8, 2264 SL Leidschendam, NL
+- KvK 93236867, VAT NL866322887B01
+- Business model: digital downloads, one-time payment via Stripe
+- Audience: B2C + B2B
+- Key feature to enable: **Widerrufsbelehrung mit Muster-Widerrufsformular für digitale Inhalte** (the immediate-execution waiver variant)
+
+Outputs to save to `docs/legal-templates/` in the frontend repo (or paste to Cowork directly):
+- `agb.md` (or `agb.pdf` + extracted text)
+- `datenschutzerklaerung.md`
+- `widerrufsbelehrung.md` + `muster-widerrufsformular.md`
+
+## P3b — Diff templates vs. our drafts (Cowork + Yves)
+
+Cowork Claude reads the templates, diffs section-by-section against the merged `/de/agb`, `/de/datenschutz`, AGB §6, and the email template. Surfaces:
+- Sections in the template not in our drafts (most likely: explicit `Muster-Widerrufsformular` link, broader liability disclaimers, possibly cookie/local-storage disclosure even though we don't use cookies)
+- Wording differences in the §6 expiry/waiver clause
+- Stronger Datenschutz wording on US sub-processor disclosures (Stripe US, Resend US)
+
+Output: `m7-p3-template-driven-revisions` PR draft against the frontend repo.
+
+## P3c — Beta framing + email Widerrufsformular link (Code)
+
+Two small frontend changes:
+
+1. **Beta badge** on `/[locale]/buy` and `/[locale]/unlocked`. Subtle inline copy:
+   - DE: "Plainvoice Pro ist im Early-Access. Probleme? Schreiben Sie uns an info@plain-cards.com — wir kümmern uns."
+   - EN: "Plainvoice Pro is in early access. Issues? Email info@plain-cards.com and we'll make it right."
+
+2. **Muster-Widerrufsformular** link in:
+   - The license email template (DE + EN), below the steps section
+   - `/[locale]/unlock`, in a small footer link
+   - A new static page `/[locale]/widerruf` with the model form text + a `mailto:info@plain-cards.com?subject=Widerruf%20Plainvoice%20Pro` link
+
+Belt-and-braces — even if §6 waiver is ticked, customers always have a clear path to exercise it.
+
+## P3d — Document the lawyer-engagement tripwire (Cowork)
+
+Add to `AGENTS.md` "When to engage a real lawyer":
+- First €1,000 cumulative revenue, OR
+- First 25 paid customers, OR
+- First customer complaint / dispute / chargeback / Abmahnung.
+
+Whichever fires first triggers an immediate 1–2 hour lawyer engagement (DACH IT-Recht specialist, ~€300–600 budget) for a full review of AGB + Datenschutz + email template.
+
+## Operational policy until tripwire fires
+
+- **No-questions-asked refund within 30 days** of purchase, regardless of §6 waiver. Document this internally; do NOT change the AGB to promise it (operational stance ≠ contractual right). Refund via Stripe Dashboard.
+- **No active enforcement of §6 waiver.** If a customer disputes within 14 days, refund without challenge.
+- Track every refund + complaint in a simple log (`docs/operations/refund-log.md`) so we have data when the tripwire engagement happens.
 
 ---
 
@@ -558,14 +603,24 @@ Then: announce on HN, /r/de_buchhaltung, DACH dev Slack, X.
 
 ---
 
-## Pre-launch lawyer checklist (MUST be done before P4)
+## Pre-launch P3 checklist (template-driven self-cert)
 
-- [ ] AGB §6 checkbox copy reviewed
-- [ ] Email template DE + EN reviewed for `Bestätigung auf dauerhaftem Datenträger` compliance
-- [ ] Datenschutz expanded to include Resend (US, SCCs)
-- [ ] Datenschutz expanded to include Cloudflare (US, SCCs — Cloudflare Workers do process data through US-region edge nodes; needs disclosure)
-- [ ] Stripe Tax invoice template reviewed against §14 UStG
-- [ ] Withdrawal form (Widerrufsformular) drafted in DE + EN, linked from `/buy` and from the email
+Replaces the previous lawyer-review checklist per the 2026-04-27 path-3 decision.
+
+- [ ] P3a: Trusted Shops Legal (or equivalent) account created, wizard run with Plainvoice's BV details + digital-content + immediate-execution-waiver settings
+- [ ] P3a: Generated AGB / Datenschutz / Widerrufsbelehrung saved to `docs/legal-templates/` in the frontend repo
+- [ ] P3b: Cowork Claude has produced a section-by-section diff vs. the merged drafts and opened `m7-p3-template-driven-revisions` PR
+- [ ] P3b: PR merged (Code applies the diff; Cowork reviews against the brief)
+- [ ] P3c: Beta framing copy added to `/[locale]/buy` + `/[locale]/unlocked` (DE + EN)
+- [ ] P3c: Muster-Widerrufsformular drafted, added as `/[locale]/widerruf` page, linked from email + `/unlock`
+- [ ] P3c: Email template DE + EN updated to include Widerrufsformular link
+- [ ] P3d: Tripwire policy in `AGENTS.md` (€1k revenue / 25 customers / first complaint)
+- [ ] P3d: Operational refund policy documented (no-questions-asked 30-day until tripwire)
+- [ ] Datenschutz expanded to include Resend (US, SCCs) — should already be in template output
+- [ ] Datenschutz expanded to include Cloudflare (US, SCCs — Cloudflare Workers do process data through US-region edge nodes)
+- [ ] Stripe Tax invoice template enabled in Dashboard (P4 task; checked here to confirm it's coming)
+
+When the tripwire fires (post-launch), open `docs/handoffs/09-lawyer-review.md` for the formal review and any required revisions.
 
 ## Locked decisions (kickoff inputs)
 
