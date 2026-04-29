@@ -142,15 +142,192 @@ Insert as new section AFTER §13 (becomes the final § 14):
 
 # Part 2 — Datenschutzerklärung diff
 
-**TBD.** Blocked on:
-1. Analytics tool decision — Cowork PM recommends Cloudflare Web Analytics (free, cookieless, no consent banner needed) over Plausible (~€9/mo, EU-hosted, better custom events). Yves to decide.
-2. Analytics implementation — small Code task once decision is made; ~30 min.
-3. Yves running the IT-Recht Datenschutzerklärung wizard with analytics in scope.
-4. Yves uploading the generated `Online-Shop_dig.Inhalte-Datenschutzerklaerung.txt` (or equivalent).
+Source: Yves uploaded `Online-Shop-Datenschutz.txt` (IT-Recht generated) on 2026-04-29 after running the wizard with the recommendations from earlier in this session (Cloudflare Web Analytics under "andere Webanalyse"; Stripe under Zahlungsdienste; "Spezielle Dienste für Bestellverwaltung" enabled but the Resend / Cloudflare Workers presets weren't available so neither got auto-text — manual paragraphs needed).
 
-When (3) and (4) land, Cowork PM extends this brief with Part 2.
+Folds in pentest issue [#19](https://github.com/yvendive/plainvoice/issues/19) (privacy text accuracy on `/api/verify` round-trip).
 
-Folds-in: pentest issue [#19](https://github.com/yvendive/plainvoice/issues/19) (privacy text accuracy on `/api/verify` round-trip).
+## Structural alignment
+
+| IT-Recht template § | Topic | Our existing § | Verdict |
+| --- | --- | --- | --- |
+| 1 | Einleitung + Verantwortlicher | § 1 Verantwortlicher | **Use template's wording**. Adds the boilerplate "Wir freuen uns..." opener and the standard Verantwortlicher definition. Add KvK-Nr. line back in (template doesn't include it; ours does). |
+| — | (no equivalent) | § 2 Grundsatz: Lokale Verarbeitung | **Keep ours, position as new § 2**. This is a Plainvoice USP and a positive trust signal — the XML never leaves the browser. The template assumes server-side processing; our reality is client-side. **Critical to keep.** |
+| 2 | Datenerfassung beim Besuch der Website (Server-Logfiles + SSL) | (partial in our § 3) | **Use template's wording**. More thorough Server-Logfiles enumeration than ours, plus the SSL/TLS paragraph. Replaces our partial coverage. |
+| 3.1 | Hosting (generic EU-Anbieter) | § 3 Hosting (easyname Vienna explicit) | **Keep ours**. Specific easyname Vienna disclosure beats template's generic phrasing. |
+| 3.2 | Cloudflare (described as CDN for website) | (no equivalent) | **DO NOT USE template's 3.2 as-is.** It frames Cloudflare as a website CDN, but plainvoice.de is NOT proxied through Cloudflare — Cloudflare's role is hosting the **Worker API** (`plainvoice-pay.yvendive.workers.dev`). Substantial rewrite required. See "Cloudflare Workers" replacement text below. |
+| 4 | Kontaktaufnahme | § 5 Kontaktaufnahme | **Use template's wording** as base; ours says nearly the same thing but slightly less precise on Art. 6 grounds. |
+| 5.1 | Bestellabwicklung intro | (partial, scattered) | **Use template's wording**. Standard intro paragraph. |
+| 5.2 | Stripe / Paymentdienst | § 6 Zahlungsabwicklung | **Hybrid**. Template's 5.2 includes a long Bonitätsprüfung paragraph that's only relevant if we offer Rechnungs-/Ratenkauf (we don't — Stripe Checkout = card only). **Keep the first half** (Stripe identification, payment-data transmission Art. 6(1)(b)) and **drop the Bonitätsprüfung paragraph** describing alternative Zahlungsmittel/Geburtsdatum etc. Stripe still does internal Risk checks but doesn't take Geburtsdatum from us. |
+| — | (no equivalent — wizard didn't have a Resend preset) | (no equivalent) | **ADD new § 5.3 — Resend** with the manual disclosure text below. |
+| — | (no equivalent — wizard didn't have a CF Workers preset) | (no equivalent — replaces the misleading 3.2 above) | **ADD new § 5.4 — Cloudflare Workers (API)** with the manual disclosure text below. |
+| 6 | Webanalysedienste / Cloudflare Web Analytics | § 4 Keine Cookies, kein Tracking | **REWRITE template's 6 entirely.** The template's auto-generated text describes Cloudflare Web Analytics as if it uses cookies, heatmaps, and a Cookie-Consent-Tool — **all factually wrong**. CF Web Analytics is cookieless, aggregate-only, no individual-session tracking, no consent needed under TDDDG §25 (no terminal-equipment storage access). The template's wording would also implicitly oblige us to ship a Cookie-Consent-Tool we don't have. Replace with accurate description. See "Cloudflare Web Analytics" replacement text below. **Also drop our existing § 4** "Keine Cookies, kein Tracking" — that wording is now stale (we DO have cookieless analytics). |
+| — | (no equivalent — TDDDG §25 localStorage) | (mentioned briefly in our § 4) | **ADD new § 7 — Lokalspeicher (localStorage)**. We use `localStorage.plainvoice.pro` for the Pro entitlement flag and `localStorage.plainvoice.pro.key` for the license key. TDDDG §25(2)(2) "essentiell zur Bereitstellung des vom Nutzer ausdrücklich gewünschten Dienstes" carve-out applies — no consent needed but disclosure required. |
+| 7 | Rechte des Betroffenen + WIDERSPRUCHSRECHT | § 9 Ihre Rechte | **Use template's wording**. More thorough enumeration of all Art. 15-22 rights plus the prominent WIDERSPRUCHSRECHT block (UPPERCASE, as required by case law). Better than ours. |
+| — | (template lacks explicit DPA reference) | § 10 Beschwerderecht | **Keep ours, append to template's § 7 / new § 8**. The Autoriteit Persoonsgegevens reference (Den Haag) is correct for a Dutch BV; the template's generic "Aufsichtsbehörde" is too vague. |
+| 8 | Dauer der Speicherung | (mentioned briefly per-section in ours) | **Use template's wording**. Better-organized retention-period disclosure. |
+| — | (no equivalent) | § 11 Änderungen | **Keep ours**. Standard. |
+
+## New manual paragraphs to add
+
+### § 5.3 — Resend (transactional email)
+
+```
+Zur Zustellung des Lizenzschlüssels nach erfolgreicher Zahlung nutzen wir
+den E-Mail-Versanddienstleister Resend (Resend, Inc., 2261 Market Street
+#5039, San Francisco, CA 94114, USA). An Resend werden Ihre E-Mail-Adresse
+sowie der für Sie ausgestellte Lizenzschlüssel im Klartext übermittelt,
+damit die transaktionale E-Mail mit dem Schlüssel an Sie zugestellt
+werden kann.
+
+Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO (Erfüllung des
+Kaufvertrags) sowie unser berechtigtes Interesse gem. Art. 6 Abs. 1
+lit. f DSGVO an einer zuverlässigen E-Mail-Zustellung. Wir haben mit
+Resend einen Auftragsverarbeitungsvertrag geschlossen, der den Schutz
+Ihrer Daten sicherstellt und eine unberechtigte Weitergabe an Dritte
+untersagt.
+
+Für Datenübermittlungen in die USA hat sich Resend dem
+EU-US-Datenschutzrahmen (EU-US Data Privacy Framework) angeschlossen,
+das auf Basis eines Angemessenheitsbeschlusses der Europäischen
+Kommission die Einhaltung des europäischen Datenschutzniveaus
+sicherstellt.
+```
+
+### § 5.4 — Cloudflare Workers (API für Lizenzvergabe und -prüfung)
+
+```
+Die Bestellabwicklung — Erzeugung des Lizenzschlüssels nach Zahlungs-
+eingang sowie die Echtheitsprüfung eingegebener Lizenzschlüssel über die
+Eingabemaske unter „Pro aktivieren" — wird durch eine bei Cloudflare
+betriebene API-Komponente verarbeitet (Cloudflare, Inc., 101 Townsend
+St., San Francisco, CA 94107, USA). Diese verarbeitet folgende Daten:
+
+- Ihre E-Mail-Adresse (zur Erstellung und späteren Zuordnung der Lizenz)
+- Den Stripe Payment-Intent-Identifikator (zur Idempotenz-Sicherung
+  gegen mehrfache Ausstellung)
+- Den Lizenzschlüssel (zur Speicherung und späteren Validierung bei
+  Aktivierung)
+- Den Zeitpunkt Ihrer Zustimmung zum sofortigen Vertragsbeginn
+- Die von Ihnen gewählte Sprache (Deutsch oder Englisch)
+- Bei einer Lizenzschlüssel-Validierung ausschließlich der von Ihnen
+  eingegebene Lizenzschlüssel; die Antwort der API enthält lediglich
+  die Information „gültig" oder „ungültig" — keine personenbezogenen
+  Daten werden zurückgespielt
+
+Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO (Vertragserfüllung). Wir
+haben mit Cloudflare einen Auftragsverarbeitungsvertrag geschlossen.
+Für Datenübermittlungen in die USA hat sich Cloudflare dem
+EU-US-Datenschutzrahmen (EU-US Data Privacy Framework) angeschlossen.
+
+Die Speicherdauer der Lizenzdaten richtet sich nach den unter "Dauer
+der Speicherung" dargestellten gesetzlichen Aufbewahrungsfristen
+(insbesondere steuerrechtliche Pflichten).
+```
+
+### § 6 — Webanalysedienste / Cloudflare Web Analytics (REPLACEMENT)
+
+This **fully replaces** the IT-Recht template's auto-generated § 6 wording. The template's wording about cookies/heatmaps/consent is wrong for our case.
+
+```
+Wir nutzen den Webanalysedienst Cloudflare Web Analytics (Cloudflare,
+Inc., 101 Townsend St., San Francisco, CA 94107, USA), um aggregierte
+Statistiken über die Nutzung unserer Website zu erhalten (z.B. Anzahl
+Seitenaufrufe, Herkunftsländer, Verweisquellen, verwendete Geräte-
+typen).
+
+Der Dienst arbeitet ohne Cookies und ohne lokale Speicherung von
+Informationen auf Ihrem Endgerät. Es findet keine individuelle
+Nutzerverfolgung, kein Fingerprinting und keine Erstellung von
+Bewegungsprofilen oder Heatmaps statt. Die erhobenen Daten werden
+unmittelbar serverseitig anonymisiert aggregiert; eine Identifikation
+einzelner Personen ist auf Basis dieser Daten nicht möglich.
+
+Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse
+an der Verbesserung unserer Website). Da der Dienst keine Informationen
+auf Ihrem Endgerät speichert oder ausliest, ist eine Einwilligung nach
+§ 25 Abs. 1 TDDDG nicht erforderlich; es greift die Ausnahme nach § 25
+Abs. 2 Nr. 2 TDDDG nicht, da die Verarbeitung schon nicht in den
+Anwendungsbereich von § 25 Abs. 1 fällt.
+
+Wir haben mit Cloudflare einen Auftragsverarbeitungsvertrag
+geschlossen. Für Datenübermittlungen in die USA hat sich der Anbieter
+dem EU-US-Datenschutzrahmen (EU-US Data Privacy Framework)
+angeschlossen.
+```
+
+### § 7 — Lokalspeicher (localStorage)
+
+Replaces our existing § 4 "Keine Cookies, kein Tracking" (which is stale post-analytics).
+
+```
+Diese Website setzt keine Cookies. Zur Speicherung Ihres Pro-Zugangs
+nutzen wir den Lokalspeicher (localStorage) Ihres Browsers wie folgt:
+
+- `plainvoice.pro` — Schlüssel mit dem Wert „1", wenn Sie Ihren
+  Lizenzschlüssel erfolgreich aktiviert haben. Ohne diesen Eintrag
+  bleibt die Pro-Funktion gesperrt.
+- `plainvoice.pro.key` — Ihr eingegebener Lizenzschlüssel, lokal
+  gespeichert, damit die Aktivierung nach einem Browserneustart
+  bestehen bleibt.
+
+Diese Einträge verlassen Ihren Browser nicht und werden nicht an uns
+oder Dritte übermittelt — mit Ausnahme der einmaligen Übermittlung des
+Lizenzschlüssels an unsere API zum Zweck der Echtheitsprüfung (siehe
+oben § 5.4).
+
+Eine Einwilligung gemäß § 25 Abs. 1 TDDDG ist hierfür nicht
+erforderlich, da die Speicherung gemäß § 25 Abs. 2 Nr. 2 TDDDG
+„unbedingt erforderlich" ist, damit der von Ihnen ausdrücklich
+gewünschte Dienst — die Pro-Funktion — bereitgestellt werden kann. Sie
+können die Einträge jederzeit über die Einstellungen Ihres Browsers
+löschen; die Pro-Funktion wird dadurch wieder gesperrt.
+```
+
+## Net Datenschutzerklärung structure (after revisions)
+
+Final section list for `Privacy.s*` keys in `de.json`:
+
+1. § 1 Verantwortlicher (template wording + our KvK line)
+2. § 2 Grundsatz: Lokale Verarbeitung (KEEP ours — Plainvoice USP)
+3. § 3 Datenerfassung beim Besuch der Website (template wording: Server-Logfiles + SSL)
+4. § 4 Hosting (KEEP ours — easyname Vienna explicit)
+5. § 5 Datenverarbeitung zur Bestellabwicklung
+   - § 5.1 Allgemeines (template wording)
+   - § 5.2 Stripe (template wording, drop Bonitätsprüfung-alternative-Zahlungsmittel paragraph)
+   - § 5.3 Resend (NEW manual text above)
+   - § 5.4 Cloudflare Workers (NEW manual text above; replaces template's 3.2)
+6. § 6 Webanalyse / Cloudflare Web Analytics (REPLACEMENT text above)
+7. § 7 Lokalspeicher (NEW manual text above; replaces our stale § 4)
+8. § 8 Kontaktaufnahme (template wording; our § 5 was nearly identical)
+9. § 9 Rechte des Betroffenen (template wording, including UPPERCASE Widerspruchsrecht block)
+10. § 10 Beschwerderecht bei einer Aufsichtsbehörde (KEEP ours — Autoriteit Persoonsgegevens reference)
+11. § 11 Dauer der Speicherung (template wording)
+12. § 12 Änderungen dieser Datenschutzerklärung (KEEP ours)
+
+## Changes for Code (Datenschutz portion)
+
+When this brief is handed off as the `m7-p3-template-driven-revisions` PR, Code's Datenschutz commit must:
+
+1. Rewrite all `Privacy.s*` keys in `src/i18n/messages/de.json` to match the section structure above. (EN keys are dropped per the DE-only-legal decision.)
+2. Update `src/app/[locale]/datenschutz/page.tsx` if the section count or shape changes (currently 11 sections; new is 12 sections plus sub-sections § 5.1–5.4 — Code may need to extend the renderer for sub-sections, or flatten the numbering, depending on what reads cleanest).
+3. Verify the i18n parity test still passes (since EN keys are being removed entirely, parity check needs to handle "DE-only namespace" — Code triages whether to allowlist `Privacy.*` keys in the parity test or remove the EN counterpart entries).
+4. The `lastUpdated` constant in `src/lib/legal/company.ts` (`LEGAL_LAST_UPDATED`) bumps to today's date when this PR merges.
+
+---
+
+# Part 3 — Widerrufsbelehrung diff
+
+**TBD.** Blocked on Yves running the IT-Recht Widerrufsbelehrung wizard and uploading the generated text. When that lands, Cowork PM extends this brief with Part 3.
+
+Cross-reference: P3c plan says `/de/widerruf` page hosts the full Widerrufsbelehrung + Muster-Widerrufsformular. The text move (Change 5 in Part 1 above) populates it from existing § 6 of the AGB; the IT-Recht template diff in Part 3 will refine that text.
+
+---
+
+# When all three parts are complete
+
+This brief becomes the canonical implementation spec for the `m7-p3-template-driven-revisions` PR. Cowork PM writes a separate short Code-prompt at that point that points at this file, lists each Change as one commit, and follows the standard handoff-brief flow per AGENTS.md "Handoff briefs" rule #5 (Code self-commits the brief if uncommitted).
+
+Until Part 3 is filled in, do NOT hand this to Code — the AGB + Datenschutz changes shouldn't ship without their Widerrufsbelehrung counterpart.
 
 ---
 
