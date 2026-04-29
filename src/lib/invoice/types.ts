@@ -7,7 +7,10 @@ export type ParseError =
   | { kind: 'not-xrechnung'; detail: string }
   | { kind: 'missing-required-field'; field: string; xpath: string }
   | { kind: 'invalid-field'; field: string; xpath: string; detail: string }
-  | { kind: 'unknown-syntax'; rootElement: string };
+  | { kind: 'unknown-syntax'; rootElement: string }
+  // Pre-flight rejection of XML containing <!DOCTYPE or <!ENTITY declarations.
+  // Surfaced before any fast-xml-parser invocation. See #17.
+  | { kind: 'xml-entity-declarations-forbidden' };
 
 export type ParseWarning =
   | { kind: 'missing-optional-field'; field: string }

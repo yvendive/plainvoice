@@ -3,7 +3,7 @@
 import { useCallback, useMemo, useReducer, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import type { Invoice, ParseError, ParseWarning } from '@/lib/invoice';
-import { parseInvoice } from '@/lib/invoice';
+import { parseInvoice, MAX_XML_FILE_BYTES } from '@/lib/invoice';
 import {
   type CsvOptions,
   type Locale,
@@ -34,7 +34,7 @@ type Status =
   | { kind: 'ready'; filename: string; invoice: Invoice; warnings: ParseWarning[] }
   | { kind: 'generating'; filename: string; invoice: Invoice; warnings: ParseWarning[] }
   | { kind: 'done'; filename: string; byteSize: number }
-  | { kind: 'invalid'; error: ParseError | { kind: 'too-big' } | { kind: 'too-many' } | { kind: 'too-large' } | { kind: 'generic'; detail?: string } }
+  | { kind: 'invalid'; error: ParseError | { kind: 'too-big' } | { kind: 'too-many' } | { kind: 'too-large' } | { kind: 'file-too-large'; sizeBytes: number; limitBytes: number } | { kind: 'generic'; detail?: string } }
   | { kind: 'bulk-ready'; count: number }
   | { kind: 'bulk-generating' }
   | { kind: 'bulk-done'; zipSize: number; hadErrors: boolean };
@@ -43,7 +43,7 @@ type Action =
   | { type: 'reset' }
   | { type: 'parse-start'; filename: string }
   | { type: 'parse-ok'; filename: string; invoice: Invoice; warnings: ParseWarning[] }
-  | { type: 'parse-fail'; error: ParseError | { kind: 'too-big' } | { kind: 'too-many' } | { kind: 'too-large' } | { kind: 'generic'; detail?: string } }
+  | { type: 'parse-fail'; error: ParseError | { kind: 'too-big' } | { kind: 'too-many' } | { kind: 'too-large' } | { kind: 'file-too-large'; sizeBytes: number; limitBytes: number } | { kind: 'generic'; detail?: string } }
   | { type: 'convert-start' }
   | { type: 'convert-ok'; filename: string; byteSize: number }
   | { type: 'convert-fail'; detail?: string }
@@ -125,6 +125,16 @@ export function Converter({ locale }: ConverterProps) {
 
   const parseSingleFile = useCallback(
     async (file: File) => {
+      // Per-file size cap (#17). Checked BEFORE file.text() so a 5+ MB
+      // upload never gets read into memory; the converter UI can surface
+      // the size error immediately.
+      if (file.size > MAX_XML_FILE_BYTES) {
+        dispatch({
+          type: 'parse-fail',
+          error: { kind: 'file-too-large', sizeBytes: file.size, limitBytes: MAX_XML_FILE_BYTES },
+        });
+        return;
+      }
       dispatch({ type: 'parse-start', filename: file.name });
       try {
         const text = await file.text();
@@ -144,14 +154,14 @@ export function Converter({ locale }: ConverterProps) {
   // ── Bulk handling ─────────────────────────────────────────────────────
 
   const parseBulkFiles = useCallback(
-    async (files: File[]) => {
+    async (files: File[], priorErrors: BulkConvertError[] = []) => {
       const initialEntries: BulkFileEntry[] = files.map((f) => ({
         file: f,
         status: 'queued',
       }));
       setBulkEntries(initialEntries);
       dispatch({ type: 'bulk-start', count: files.length });
-      bulkParseErrorsRef.current = [];
+      bulkParseErrorsRef.current = [...priorErrors];
 
       // Mark all as parsing, then resolve each
       setBulkEntries((prev) => prev.map((e) => ({ ...e, status: 'parsing' })));
@@ -187,7 +197,7 @@ export function Converter({ locale }: ConverterProps) {
           return { file, status: 'error' as const, errorMessage: errorMsg };
         }),
       );
-      bulkParseErrorsRef.current = newErrors;
+      bulkParseErrorsRef.current = [...priorErrors, ...newErrors];
     },
     [],
   );
@@ -196,10 +206,20 @@ export function Converter({ locale }: ConverterProps) {
 
   const onFiles = useCallback(
     async (result: BulkInputResult) => {
-      const { files } = result;
+      const { files, errors } = result;
 
+      // Empty file list with at least one size-rejected entry → surface
+      // the specific size error rather than the generic "no XML files".
       if (files.length === 0) {
-        dispatch({ type: 'parse-fail', error: { kind: 'generic', detail: 'No XML files found' } });
+        const sizeError = errors.find((e) => e.reason === 'file too large');
+        if (sizeError) {
+          dispatch({
+            type: 'parse-fail',
+            error: { kind: 'file-too-large', sizeBytes: 0, limitBytes: MAX_XML_FILE_BYTES },
+          });
+        } else {
+          dispatch({ type: 'parse-fail', error: { kind: 'generic', detail: 'No XML files found' } });
+        }
         return;
       }
 
@@ -208,7 +228,15 @@ export function Converter({ locale }: ConverterProps) {
         return;
       }
 
-      await parseBulkFiles(files);
+      // Pre-collect input errors (e.g. oversize XML files filtered out
+      // during collection). Pass them to parseBulkFiles so they land in
+      // _errors.txt alongside any per-file parse failures.
+      const inputErrors = errors.map((e) => ({
+        filename: e.filename,
+        error: e.reason === 'file too large' ? `File too large (limit ${MAX_XML_FILE_BYTES} bytes)` : e.reason,
+      }));
+
+      await parseBulkFiles(files, inputErrors);
     },
     [parseSingleFile, parseBulkFiles],
   );
@@ -340,7 +368,7 @@ export function Converter({ locale }: ConverterProps) {
         </div>
       );
     }
-    return <ErrorCard error={error as ParseError | { kind: 'too-big' } | { kind: 'generic'; detail?: string }} onReset={onReset} />;
+    return <ErrorCard error={error as ParseError | { kind: 'too-big' } | { kind: 'file-too-large'; sizeBytes: number; limitBytes: number } | { kind: 'generic'; detail?: string }} onReset={onReset} />;
   }
 
   if (status.kind === 'done') {

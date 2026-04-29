@@ -213,5 +213,10 @@
     "errorInvalid": "Key invalid or already revoked.",
     "errorNetwork": "Connection failed — please try again.",
     "back": "Back"
+  },
+  "Errors": {
+    "fileTooLarge": "File too large",
+    "xmlSizeLimit": "This XML file exceeds the 5 MB per-file limit. Please upload a smaller file.",
+    "xmlEntityDeclarationsForbidden": "XML with entity declarations is rejected for security reasons."
   }
 }

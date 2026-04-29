@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { collectFromInput, BulkLimitError } from '@/lib/bulk/collect';
 
 function makeFile(name: string, sizeBytes = 100, content = 'x'): File {
@@ -60,5 +60,40 @@ describe('collectFromInput', () => {
     const arr: File[] = [makeFile('a.xml'), makeFile('b.xml')];
     const result = await collectFromInput(arr);
     expect(result.files).toHaveLength(2);
+  });
+
+  it('rejects per-file >5 MB with reason "file too large" — does NOT throw', async () => {
+    // 5 MB + 1 byte triggers the per-file cap (#17). Distinct from the
+    // 100 MB total cap which throws BulkLimitError.
+    const big = makeFile('huge.xml', 5 * 1024 * 1024 + 1);
+    const small = makeFile('tiny.xml', 100);
+    const result = await collectFromInput([big, small]);
+    expect(result.files).toHaveLength(1);
+    expect(result.files[0].name).toBe('tiny.xml');
+    expect(result.errors).toHaveLength(1);
+    expect(result.errors[0]).toEqual({ filename: 'huge.xml', reason: 'file too large' });
+  });
+
+  it('accepts a 4.9 MB XML file (boundary)', async () => {
+    const justUnder = makeFile('big-but-ok.xml', 5 * 1024 * 1024 - 1);
+    const result = await collectFromInput([justUnder]);
+    expect(result.files).toHaveLength(1);
+    expect(result.errors).toHaveLength(0);
+  });
+
+  it('does NOT read the body of an oversize file (no text() call)', async () => {
+    // Build a 5.1 MB File then spy on its .text() method. The size cap
+    // must be enforced before any expensive read.
+    const big = makeFile('huge.xml', 5 * 1024 * 1024 + 1);
+    const textSpy = vi.spyOn(big, 'text');
+    const arrayBufferSpy = vi.spyOn(big, 'arrayBuffer');
+
+    const result = await collectFromInput([big]);
+
+    expect(result.files).toHaveLength(0);
+    expect(result.errors).toHaveLength(1);
+    expect(result.errors[0].reason).toBe('file too large');
+    expect(textSpy).not.toHaveBeenCalled();
+    expect(arrayBufferSpy).not.toHaveBeenCalled();
   });
 });

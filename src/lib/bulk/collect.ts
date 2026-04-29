@@ -1,4 +1,5 @@
 import { unzip } from 'fflate';
+import { MAX_XML_FILE_BYTES } from '@/lib/invoice/limits';
 
 export interface BulkInputError {
   filename: string;
@@ -19,6 +20,13 @@ export class BulkLimitError extends Error {
 
 const MAX_FILES = 50;
 const MAX_BYTES_TOTAL = 100 * 1024 * 1024;
+
+/**
+ * Per-file-too-large reason marker used in BulkInputError.reason. Stable
+ * string literal so the UI can map to the i18n Errors.fileTooLarge key.
+ * See #17.
+ */
+export const REASON_FILE_TOO_LARGE = 'file too large';
 
 function isXml(name: string): boolean {
   return name.toLowerCase().endsWith('.xml');
@@ -48,8 +56,18 @@ function partitionXml(files: File[]): { xml: File[]; errors: BulkInputError[] } 
   const errors: BulkInputError[] = [];
   for (const f of files) {
     if (isCruft(f.name)) continue;
-    if (isXml(f.name)) xml.push(f);
-    else errors.push({ filename: f.name, reason: 'not XML' });
+    if (!isXml(f.name)) {
+      errors.push({ filename: f.name, reason: 'not XML' });
+      continue;
+    }
+    // Per-file size cap (#17). Enforced BEFORE the file lands in the
+    // "to convert" set so a single oversize XML can't push the bulk run
+    // into a freeze; total-bulk cap (100 MB) still applies on top.
+    if (f.size > MAX_XML_FILE_BYTES) {
+      errors.push({ filename: f.name, reason: REASON_FILE_TOO_LARGE });
+      continue;
+    }
+    xml.push(f);
   }
   return { xml, errors };
 }
@@ -154,12 +172,18 @@ export async function unzipXmlFiles(zipFile: File): Promise<BulkInputResult> {
 
   for (const [path, bytes] of Object.entries(unpacked)) {
     if (isCruft(path)) continue;
-    if (isXml(path)) {
-      const basename = path.split('/').pop() ?? path;
-      xmlFiles.push(new File([bytes as unknown as Uint8Array<ArrayBuffer>], basename, { type: 'text/xml' }));
-    } else {
+    if (!isXml(path)) {
       errors.push({ filename: path, reason: 'not XML' });
+      continue;
     }
+    // Per-file size cap (#17). Applied to ZIP entries too so an attacker
+    // can't ship a 50 MB XML hidden inside a small archive.
+    if (bytes.length > MAX_XML_FILE_BYTES) {
+      errors.push({ filename: path, reason: REASON_FILE_TOO_LARGE });
+      continue;
+    }
+    const basename = path.split('/').pop() ?? path;
+    xmlFiles.push(new File([bytes as unknown as Uint8Array<ArrayBuffer>], basename, { type: 'text/xml' }));
   }
 
   checkLimits(xmlFiles);

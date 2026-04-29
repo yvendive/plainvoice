@@ -6,13 +6,19 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 
 export interface ErrorCardProps {
-  error: ParseError | { kind: 'too-big' } | { kind: 'generic'; detail?: string };
+  error:
+    | ParseError
+    | { kind: 'too-big' }
+    | { kind: 'file-too-large'; sizeBytes: number; limitBytes: number }
+    | { kind: 'generic'; detail?: string };
   onReset: () => void;
 }
 
 export function ErrorCard({ error, onReset }: ErrorCardProps) {
   const t = useTranslations('Converter');
+  const tErrors = useTranslations('Errors');
 
+  let title: string = t('errorTitle');
   let body: string;
   switch (error.kind) {
     case 'not-xml':
@@ -33,13 +39,20 @@ export function ErrorCard({ error, onReset }: ErrorCardProps) {
     case 'too-big':
       body = t('errorTooBig');
       break;
+    case 'file-too-large':
+      title = tErrors('fileTooLarge');
+      body = tErrors('xmlSizeLimit');
+      break;
+    case 'xml-entity-declarations-forbidden':
+      body = tErrors('xmlEntityDeclarationsForbidden');
+      break;
     default:
       body = t('errorGeneric');
   }
 
   return (
     <Alert variant="destructive" className="w-full">
-      <AlertTitle>{t('errorTitle')}</AlertTitle>
+      <AlertTitle>{title}</AlertTitle>
       <AlertDescription className="mt-1">{body}</AlertDescription>
       <div className="mt-3">
         <Button variant="outline" size="sm" onClick={onReset}>
