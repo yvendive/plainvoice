@@ -652,6 +652,7 @@ When the tripwire fires (post-launch), open `docs/handoffs/09-lawyer-review.md` 
 | Refund policy | Keep §6 waiver as drafted (immediate-execution → loss of withdrawal right) |
 | Legal-template vendor | **IT-Recht Kanzlei Starter Schutzpaket** (€9.90/mo, monthly cancellable, booked 2026-04-29). Trusted Shops Legal blocked NL BVs at signup. |
 | Legal page locale scope | **DE only.** EN routes (`/en/agb`, `/en/widerruf`, `/en/datenschutz`, `/en/impressum`) redirect to DE equivalents. Audience is DE-tax-adjacent by definition; eliminates translation-drift maintenance. |
+| Verbraucherschlichtung (§36 VSBG) | **Option 1 — keine Teilnahme** (no participation). Standard choice for small operators (no §38 VSBG mandatory threshold, no contractual obligation). IT-Recht template auto-inserts the mandatory disclosure clause into AGB/Impressum. Does not affect consumer rights or AGENTS.md tripwire refund policy. |
 
 ## Stripe test-mode artifacts (pre-created for P1)
 
