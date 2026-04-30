@@ -34,6 +34,8 @@ Process rule for Cowork PM → Code handoffs. Yves flagged repeated violations o
 
    This rule applies only to handoff briefs in `docs/handoffs/`. AGENTS.md edits, security audits, triage docs, and other non-brief tracked-file changes still follow Git-hygiene rule #1 (Yves commits manually).
 
+6. **Always present the ready-to-paste chat prompt in the conversation — not just in the brief.** Even when the brief contains an embedded prompt as canonical reference, Cowork PM ALWAYS surfaces the ready-to-paste version in chat when handing off to Code. Yves operates in chat; he should never have to scroll through a 200-line brief to find his next action. Phrases like "the prompt is in the brief, take it from there" are forbidden. Always paste the prompt as a code block in the chat reply, even if it duplicates what's in the brief. The brief's embedded prompt serves as a permanent reference for future agents resuming the work; the chat-presented prompt serves Yves's immediate next click.
+
 ## Model selection
 
 Every Code handoff declares the recommended model. Two places it appears:
@@ -68,6 +70,8 @@ These rules exist because we hit divergence on the M7 P2 cleanup. They prevent i
 5. **Worktree-aware branch deletion.** Squash-merged PRs delete the remote branch but the local branch needs `-D` (force) and any worktrees must be removed first via `git worktree remove --force <path>`. Cowork Claude includes the worktree-remove command preemptively.
 
 6. **Never destroy work that exists only on Yves's machine without explicit confirmation.** `git reset --hard`, `git rebase --abort` after extensive work, `git push --force` — all require Yves to greenlight. The exception is when Cowork Claude has verified that origin has equivalent or newer content.
+
+7. **Always switch to main + pull before any commit-push command targeting main.** Cowork PM commit commands that target `origin/main` MUST start with `git checkout main && git pull origin main && \`. Same expectation for Code per Handoff Briefs rule #5. Reason: after Code pushes a PR branch, Yves's local stays on that feature branch — running a commit then `git push origin main` from there lands the commit on the wrong branch and the push gets rejected. We've burned this twice (PR-1 cleanup + P3b cleanup, both 2026-04-30). The branch-check is a free three-word prefix; the recovery (cherry-pick + branch cleanup) is annoying.
 
 ## Code review verification
 
