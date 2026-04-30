@@ -52,6 +52,7 @@ export default async function AgbPage({
     { heading: t('s4Heading'), body: t('s4Body') },
     { heading: t('s5Heading'), body: t('s5Body') },
     { heading: t('s6Heading'), body: t('s6Body') },
+    { heading: t('s6aHeading'), body: t('s6aBody') },
     { heading: t('s7Heading'), body: t('s7Body') },
     { heading: t('s8Heading'), body: t('s8Body') },
     { heading: t('s9Heading'), body: t('s9Body') },
@@ -59,6 +60,7 @@ export default async function AgbPage({
     { heading: t('s11Heading'), body: t('s11Body') },
     { heading: t('s12Heading'), body: t('s12Body') },
     { heading: t('s13Heading'), body: t('s13Body') },
+    { heading: t('s14Heading'), body: t('s14Body') },
   ];
 
   return (
