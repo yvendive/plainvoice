@@ -130,3 +130,26 @@ Then submit `https://plainvoice.de/de` to:
   `checkout.stripe.com` and the return to `/{locale}/unlocked` both work.
   If the CSP blocks anything, the browser console will say so explicitly;
   do not relax `'unsafe-inline'` further without re-running this checklist.
+
+## Cloudflare Web Analytics addendum (PR #22, 2026-04-30)
+
+Wiring in Cloudflare Web Analytics required two additions to the CSP
+(PR yvendive/plainvoice#22):
+
+- **`script-src` += `https://static.cloudflareinsights.com`** — Cloudflare
+  serves the beacon script (`beacon.min.js`) from this subdomain. Without
+  this allowlist entry, the browser blocks the script load and no page-view
+  data is collected.
+- **`connect-src` += `https://cloudflareinsights.com`** — The beacon POSTs
+  page-view payloads to `cloudflareinsights.com/cdn-cgi/rum`. Without this
+  allowlist entry, the POST is blocked by CSP even after the script loads.
+
+**Why Cloudflare Web Analytics is an acceptable processor:** It is cookieless
+by design — no cookies are set, no fingerprinting is performed, and no PII is
+transmitted in the beacon payload (page URL, referrer, and timing only).
+Under Germany's TDDDG this means no consent banner is required. The processor
+is Cloudflare, Inc., operating under the EU–US Data Privacy Framework (DPF
+certification `cloudflare-inc-dba-cloudflare`). Data retention is 6 months
+by default, configurable to 3 months in the Cloudflare dashboard. See
+`docs/handoffs/M7-cloudflare-analytics.md` for the full rationale and
+post-deploy verification steps.
