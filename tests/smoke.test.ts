@@ -31,7 +31,10 @@ describe('i18n message catalogs', () => {
     >;
     expect(messages.App.title).toBe('Plainvoice');
     expect(messages.Converter.privacy).toBeTruthy();
-    expect(messages.Privacy.title).toBeTruthy();
     expect(messages.Footer.privacyLink).toBeTruthy();
+    // Legal namespaces (Privacy, Agb, Widerruf) are DE-only
+    if (locale === 'de') {
+      expect(messages.Privacy.title).toBeTruthy();
+    }
   });
 });

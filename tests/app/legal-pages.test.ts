@@ -3,6 +3,10 @@ import { COMPANY, LEGAL_LAST_UPDATED } from '@/lib/legal/company';
 import deMessages from '@/i18n/messages/de.json';
 import enMessages from '@/i18n/messages/en.json';
 
+// Legal namespaces (Agb, Privacy, Widerruf) are DE-only — EN keys were
+// dropped per the DE-only-legal-pages decision. Tests below only check
+// DE for legal content; EN tests remain for non-legal namespaces.
+
 describe('COMPANY constant', () => {
   it('has all required fields', () => {
     expect(COMPANY.legalName).toBeTruthy();
@@ -39,47 +43,27 @@ describe('Impressum i18n — data consistency with COMPANY', () => {
   });
 });
 
-describe('Privacy i18n — Stripe section present', () => {
+describe('Privacy i18n (DE-only) — Stripe section present', () => {
   it('DE s6Body mentions Stripe', () => {
     expect(deMessages.Privacy.s6Body).toContain('Stripe');
   });
 
-  it('EN s6Body mentions Stripe', () => {
-    expect(enMessages.Privacy.s6Body).toContain('Stripe');
-  });
-
-  it('DE privacy policy has 11 sections', () => {
+  it('DE privacy policy has at least 11 sections', () => {
     const keys = Object.keys(deMessages.Privacy);
-    const sectionHeadings = keys.filter((k) => k.endsWith('Heading'));
-    expect(sectionHeadings.length).toBeGreaterThanOrEqual(11);
-  });
-
-  it('EN privacy policy has 11 sections', () => {
-    const keys = Object.keys(enMessages.Privacy);
     const sectionHeadings = keys.filter((k) => k.endsWith('Heading'));
     expect(sectionHeadings.length).toBeGreaterThanOrEqual(11);
   });
 });
 
-describe('AGB i18n — key structure', () => {
-  it('DE AGB has 13 section headings', () => {
+describe('AGB i18n (DE-only) — key structure', () => {
+  it('DE AGB has at least 13 section headings', () => {
     const keys = Object.keys(deMessages.Agb);
-    const headings = keys.filter((k) => /^s\d+Heading$/.test(k));
-    expect(headings).toHaveLength(13);
+    const headings = keys.filter((k) => /^s\d+\w*Heading$/.test(k));
+    expect(headings.length).toBeGreaterThanOrEqual(13);
   });
 
-  it('EN AGB has 13 section headings', () => {
-    const keys = Object.keys(enMessages.Agb);
-    const headings = keys.filter((k) => /^s\d+Heading$/.test(k));
-    expect(headings).toHaveLength(13);
-  });
-
-  it('DE AGB withdrawal section contains COMPANY.email', () => {
-    expect(deMessages.Agb.s6RightBody).toContain(COMPANY.email);
-  });
-
-  it('EN AGB withdrawal section contains COMPANY.email', () => {
-    expect(enMessages.Agb.s6RightBody).toContain(COMPANY.email);
+  it('DE Widerruf withdrawal section contains COMPANY.email', () => {
+    expect(deMessages.Widerruf.rightBody).toContain(COMPANY.email);
   });
 });
 

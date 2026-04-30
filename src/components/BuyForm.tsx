@@ -98,6 +98,10 @@ export function BuyForm({ locale }: BuyFormProps) {
           {tf('termsLink')}
         </Link>
         {' · '}
+        <Link href="/de/widerruf" className="underline underline-offset-4 hover:opacity-80">
+          {t('widerrufLink')}
+        </Link>
+        {' · '}
         <Link href={`/${locale}/datenschutz`} className="underline underline-offset-4 hover:opacity-80">
           {tf('privacyLink')}
         </Link>

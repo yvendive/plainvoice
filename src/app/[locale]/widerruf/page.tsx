@@ -19,15 +19,15 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   if (!isLocale(locale)) return {};
-  const t = await getTranslations({ locale, namespace: 'Privacy' });
+  const t = await getTranslations({ locale: 'de', namespace: 'Widerruf' });
   return {
     title: `${t('title')} — Plainvoice`,
     robots: { index: true, follow: true },
-    alternates: { canonical: `/${locale}/datenschutz` },
+    alternates: { canonical: '/de/widerruf' },
   };
 }
 
-export default async function PrivacyPage({
+export default async function WiderrufPage({
   params,
 }: {
   params: Promise<{ locale: string }>;
@@ -39,25 +39,14 @@ export default async function PrivacyPage({
   // Legal pages are DE-only — always load German translations regardless
   // of the route locale. EN routes show DE legal text per the locked-decision
   // DE-only-legal scope (docs/handoffs/07-stripe-paywall.md).
-  const t = await getTranslations({ locale: 'de', namespace: 'Privacy' });
+  const t = await getTranslations({ locale: 'de', namespace: 'Widerruf' });
   const tApp = await getTranslations('App');
   const tf = await getTranslations('Footer');
 
   const lastUpdated = LEGAL_LAST_UPDATED;
 
-  const sections = [
-    { heading: t('s1Heading'), body: t('s1Body') },
-    { heading: t('s2Heading'), body: t('s2Body') },
-    { heading: t('s3Heading'), body: t('s3Body') },
-    { heading: t('s4Heading'), body: t('s4Body') },
-    { heading: t('s5Heading'), body: t('s5Body') },
-    { heading: t('s6Heading'), body: t('s6Body') },
-    { heading: t('s7Heading'), body: t('s7Body') },
-    { heading: t('s8Heading'), body: t('s8Body') },
-    { heading: t('s9Heading'), body: t('s9Body') },
-    { heading: t('s10Heading'), body: t('s10Body') },
-    { heading: t('s11Heading'), body: t('s11Body') },
-  ];
+  const mailtoSubject = encodeURIComponent(t('mailtoSubject'));
+  const mailtoHref = `mailto:info@plain-cards.com?subject=${mailtoSubject}`;
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -73,12 +62,53 @@ export default async function PrivacyPage({
         <p className="mt-1 text-sm text-[color:var(--muted-foreground)]">{t('lastUpdated', { date: lastUpdated })}</p>
 
         <div className="mt-8 space-y-8 text-base leading-relaxed text-[color:var(--muted-foreground)]">
-          {sections.map((s, i) => (
-            <section key={i}>
-              <h2 className="mb-2 text-lg font-semibold text-[color:var(--foreground)]">{s.heading}</h2>
-              <div className="space-y-3">{renderParagraphs(s.body)}</div>
-            </section>
-          ))}
+          {/* A. Widerrufsbelehrung */}
+          <h2 className="text-xl font-semibold text-[color:var(--foreground)]">{t('sectionAHeading')}</h2>
+
+          <section>
+            <h3 className="mb-2 text-lg font-semibold text-[color:var(--foreground)]">{t('introHeading')}</h3>
+            <div className="space-y-3">{renderParagraphs(t('introBody'))}</div>
+          </section>
+
+          <section>
+            <h3 className="mb-2 text-lg font-semibold text-[color:var(--foreground)]">{t('rightHeading')}</h3>
+            <div className="space-y-3">{renderParagraphs(t('rightBody'))}</div>
+          </section>
+
+          <section>
+            <h3 className="mb-2 text-lg font-semibold text-[color:var(--foreground)]">{t('consequencesHeading')}</h3>
+            <div className="space-y-3">{renderParagraphs(t('consequencesBody'))}</div>
+          </section>
+
+          <section>
+            <h3 className="mb-2 text-lg font-semibold text-[color:var(--foreground)]">{t('expiryHeading')}</h3>
+            <div className="space-y-3">{renderParagraphs(t('expiryBody'))}</div>
+          </section>
+
+          {/* Divider */}
+          <hr className="border-[color:var(--border)]" />
+
+          {/* B. Muster-Widerrufsformular */}
+          <h2 className="text-xl font-semibold text-[color:var(--foreground)]">{t('sectionBHeading')}</h2>
+
+          <section className="space-y-4">
+            <p>{t('formIntro')}</p>
+            <div className="rounded-lg border border-[color:var(--border)] bg-[color:var(--muted)] p-6 space-y-4">
+              <div className="space-y-3">{renderParagraphs(t('formAddressee'))}</div>
+              <div className="space-y-3 font-mono text-sm">{renderParagraphs(t('formBody'))}</div>
+            </div>
+            <p className="text-sm italic">{t('formFootnote')}</p>
+          </section>
+
+          {/* Mailto button */}
+          <div className="pt-2">
+            <a
+              href={mailtoHref}
+              className="inline-block rounded-md bg-[color:var(--accent)] px-6 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+            >
+              {t('mailtoButton')}
+            </a>
+          </div>
         </div>
 
         <p className="mt-8">
