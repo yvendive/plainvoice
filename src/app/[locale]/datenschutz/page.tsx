@@ -19,7 +19,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   if (!isLocale(locale)) return {};
-  const t = await getTranslations({ locale, namespace: 'Privacy' });
+  const t = await getTranslations({ locale: 'de', namespace: 'Privacy' });
   return {
     title: `${t('title')} — Plainvoice`,
     robots: { index: true, follow: true },
@@ -45,18 +45,33 @@ export default async function PrivacyPage({
 
   const lastUpdated = LEGAL_LAST_UPDATED;
 
-  const sections = [
+  type Section = {
+    heading: string;
+    body?: string;
+    sub?: Array<{ heading: string; body: string }>;
+  };
+
+  const sections: Section[] = [
     { heading: t('s1Heading'), body: t('s1Body') },
     { heading: t('s2Heading'), body: t('s2Body') },
     { heading: t('s3Heading'), body: t('s3Body') },
     { heading: t('s4Heading'), body: t('s4Body') },
-    { heading: t('s5Heading'), body: t('s5Body') },
+    {
+      heading: t('s5Heading'),
+      sub: [
+        { heading: t('s5_1Heading'), body: t('s5_1Body') },
+        { heading: t('s5_2Heading'), body: t('s5_2Body') },
+        { heading: t('s5_3Heading'), body: t('s5_3Body') },
+        { heading: t('s5_4Heading'), body: t('s5_4Body') },
+      ],
+    },
     { heading: t('s6Heading'), body: t('s6Body') },
     { heading: t('s7Heading'), body: t('s7Body') },
     { heading: t('s8Heading'), body: t('s8Body') },
     { heading: t('s9Heading'), body: t('s9Body') },
     { heading: t('s10Heading'), body: t('s10Body') },
     { heading: t('s11Heading'), body: t('s11Body') },
+    { heading: t('s12Heading'), body: t('s12Body') },
   ];
 
   return (
@@ -76,7 +91,19 @@ export default async function PrivacyPage({
           {sections.map((s, i) => (
             <section key={i}>
               <h2 className="mb-2 text-lg font-semibold text-[color:var(--foreground)]">{s.heading}</h2>
-              <div className="space-y-3">{renderParagraphs(s.body)}</div>
+              {s.body ? (
+                <div className="space-y-3">{renderParagraphs(s.body)}</div>
+              ) : null}
+              {s.sub ? (
+                <div className="mt-4 space-y-6">
+                  {s.sub.map((sub, j) => (
+                    <div key={j}>
+                      <h3 className="mb-1 font-medium text-[color:var(--foreground)]">{sub.heading}</h3>
+                      <div className="space-y-3">{renderParagraphs(sub.body)}</div>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
             </section>
           ))}
         </div>

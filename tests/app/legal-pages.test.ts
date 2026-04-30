@@ -44,14 +44,15 @@ describe('Impressum i18n — data consistency with COMPANY', () => {
 });
 
 describe('Privacy i18n (DE-only) — Stripe section present', () => {
-  it('DE s6Body mentions Stripe', () => {
-    expect(deMessages.Privacy.s6Body).toContain('Stripe');
+  it('DE s5_2Body mentions Stripe', () => {
+    expect(deMessages.Privacy.s5_2Body).toContain('Stripe');
   });
 
-  it('DE privacy policy has at least 11 sections', () => {
+  it('DE privacy policy has at least 12 section headings', () => {
     const keys = Object.keys(deMessages.Privacy);
     const sectionHeadings = keys.filter((k) => k.endsWith('Heading'));
-    expect(sectionHeadings.length).toBeGreaterThanOrEqual(11);
+    // 12 top-level sections (s1–s12) + 4 sub-sections (s5_1–s5_4) = 16
+    expect(sectionHeadings.length).toBeGreaterThanOrEqual(16);
   });
 });
 
