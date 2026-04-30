@@ -317,17 +317,122 @@ When this brief is handed off as the `m7-p3-template-driven-revisions` PR, Code'
 
 # Part 3 — Widerrufsbelehrung diff
 
-**TBD.** Blocked on Yves running the IT-Recht Widerrufsbelehrung wizard and uploading the generated text. When that lands, Cowork PM extends this brief with Part 3.
+Source: Yves uploaded `Widerrufsbelehrung_dig.Inhalte.txt` (IT-Recht generated) on 2026-04-30 with both toggles OFF (no extended frist, no electronic submission form).
 
-Cross-reference: P3c plan says `/de/widerruf` page hosts the full Widerrufsbelehrung + Muster-Widerrufsformular. The text move (Change 5 in Part 1 above) populates it from existing § 6 of the AGB; the IT-Recht template diff in Part 3 will refine that text.
+The IT-Recht text is structured as **A. Widerrufsbelehrung** + **B. Widerrufsformular**. We adopt this structure verbatim on the new `/de/widerruf` page (per Part 1, Change 5 — the AGB §6 slim-down moves the full Belehrung to this dedicated page).
+
+## Section-by-section comparison
+
+| IT-Recht template section | Our existing AGB § 6 sub-section | Verdict |
+| --- | --- | --- |
+| Einleitung (Verbraucher definition) | s6Intro (no Verbraucher definition) | **Use template's wording**. Includes the explicit Verbraucher-Definition (BGB §13) which makes the addressee of the Belehrung crystal clear. |
+| Widerrufsrecht | s6RightBody | **Use template's wording**. Two important gains over ours: (a) includes the phone number `+31616179209` in the contact block, (b) includes the Muster-Widerrufsformular reference ("Sie können dafür das beigefügte Muster-Widerrufsformular verwenden, das jedoch nicht vorgeschrieben ist."). Both are required for full Anlage-1-BGB compliance. |
+| Folgen des Widerrufs | s6ConsequencesBody | **Use template's wording verbatim**, even though our cleaner version skipped the Lieferkosten boilerplate. Rationale: the **Gesetzlichkeitsfiktion** under Art. 246a §1 Abs. 2 EGBGB only applies if the Muster-Widerrufsbelehrung from Anlage 1 is reproduced exactly. Deviation — even a "cleaner" deviation — breaks the legal-compliance presumption. The Lieferkosten clause is harmless for digital downloads (no shipping → no shipping costs to refund); leaving it in costs nothing and gains the Gesetzlichkeitsfiktion. |
+| Erlöschen des Widerrufsrechts | s6ExpiryBody | **Hybrid**: use template's wording AND append our Häkchen-clarification sentence. Template adds `"auf einem dauerhaften Datenträger zur Verfügung gestellt"` which is the exact §356(5) BGB requirement and is **missing from ours** — a real compliance gap. Our addition `"Wir weisen darauf hin, dass wir diese Zustimmung und Kenntnisbestätigung beim Kaufvorgang durch Setzen eines Häkchens einholen."` is a useful clarification that explains the consent-collection mechanism. Combine: template's compliant base text + our explanatory sentence as the final line. |
+| Muster-Widerrufsformular (B) | (not present in AGB) | **Use template's wording verbatim**. Required by BGB Anlage 2 — exact text mandated. |
+
+## Final text for the new `/de/widerruf` page
+
+Code creates `src/app/[locale]/widerruf/page.tsx` (DE-only, the EN locale routes to DE per the locked-decision DE-only-legal scope) with the following content as i18n message keys under namespace `Widerruf`:
+
+```json
+"Widerruf": {
+  "title": "Widerrufsbelehrung & Widerrufsformular",
+  "lastUpdated": "Stand: {date}",
+  "sectionAHeading": "A. Widerrufsbelehrung",
+  "introHeading": "Einleitung",
+  "introBody": "Verbrauchern steht ein Widerrufsrecht nach folgender Maßgabe zu, wobei Verbraucher jede natürliche Person ist, die ein Rechtsgeschäft zu Zwecken abschließt, die überwiegend weder ihrer gewerblichen noch ihrer selbständigen beruflichen Tätigkeit zugerechnet werden können:",
+  "rightHeading": "Widerrufsrecht",
+  "rightBody": "Sie haben das Recht, binnen vierzehn Tagen ohne Angabe von Gründen diesen Vertrag zu widerrufen.\n\nDie Widerrufsfrist beträgt vierzehn Tage ab dem Tag des Vertragsabschlusses.\n\nUm Ihr Widerrufsrecht auszuüben, müssen Sie uns (YS Development B.V., Prins Hendrikplein 8, 2264 SL Leidschendam, Niederlande, Tel.: +31 6 16 17 92 09, E-Mail: info@plain-cards.com) mittels einer eindeutigen Erklärung (z. B. ein mit der Post versandter Brief oder E-Mail) über Ihren Entschluss, diesen Vertrag zu widerrufen, informieren. Sie können dafür das beigefügte Muster-Widerrufsformular verwenden, das jedoch nicht vorgeschrieben ist.\n\nZur Wahrung der Widerrufsfrist reicht es aus, dass Sie die Mitteilung über die Ausübung des Widerrufsrechts vor Ablauf der Widerrufsfrist absenden.",
+  "consequencesHeading": "Folgen des Widerrufs",
+  "consequencesBody": "Wenn Sie diesen Vertrag widerrufen, haben wir Ihnen alle Zahlungen, die wir von Ihnen erhalten haben, einschließlich der Lieferkosten (mit Ausnahme der zusätzlichen Kosten, die sich daraus ergeben, dass Sie eine andere Art der Lieferung als die von uns angebotene, günstigste Standardlieferung gewählt haben), unverzüglich und spätestens binnen vierzehn Tagen ab dem Tag zurückzuzahlen, an dem die Mitteilung über Ihren Widerruf dieses Vertrags bei uns eingegangen ist. Für diese Rückzahlung verwenden wir dasselbe Zahlungsmittel, das Sie bei der ursprünglichen Transaktion eingesetzt haben, es sei denn, mit Ihnen wurde ausdrücklich etwas anderes vereinbart; in keinem Fall werden Ihnen wegen dieser Rückzahlung Entgelte berechnet.",
+  "expiryHeading": "Erlöschen des Widerrufsrechts",
+  "expiryBody": "Das Widerrufsrecht erlischt vorzeitig, wenn wir mit der Vertragserfüllung begonnen haben, nachdem Sie ausdrücklich zugestimmt haben, dass wir mit der Vertragserfüllung vor Ablauf der Widerrufsfrist beginnen, Sie uns Ihre Kenntnis davon bestätigt haben, dass Sie durch Ihre Zustimmung mit Beginn der Vertragserfüllung Ihr Widerrufsrecht verlieren, und wir Ihnen eine Bestätigung des Vertrags, in der der Vertragsinhalt einschließlich der vorgenannten Voraussetzungen zum vorzeitigen Erlöschen des Widerrufsrechts wiedergegeben ist, auf einem dauerhaften Datenträger zur Verfügung gestellt haben.\n\nWir weisen darauf hin, dass wir diese Zustimmung und Kenntnisbestätigung beim Kaufvorgang durch Setzen eines Häkchens einholen.",
+  "sectionBHeading": "B. Muster-Widerrufsformular",
+  "formIntro": "Wenn Sie den Vertrag widerrufen wollen, dann füllen Sie bitte dieses Formular aus und senden es zurück.",
+  "formAddressee": "An:\nYS Development B.V.\nPrins Hendrikplein 8\n2264 SL Leidschendam\nNiederlande\nE-Mail: info@plain-cards.com",
+  "formBody": "Hiermit widerrufe(n) ich/wir (*) den von mir/uns (*) abgeschlossenen Vertrag über den Kauf der folgenden Waren (*) / die Erbringung der folgenden Dienstleistung (*):\n\n_______________________________________________________\n_______________________________________________________\n\nBestellt am (*) ____________ / erhalten am (*) ____________\n\n________________________________________________________\nName des/der Verbraucher(s)\n\n________________________________________________________\nAnschrift des/der Verbraucher(s)\n\n________________________________________________________\nUnterschrift des/der Verbraucher(s) (nur bei Mitteilung auf Papier)\n\n_________________________\nDatum",
+  "formFootnote": "(*) Unzutreffendes streichen",
+  "mailtoButton": "Widerruf per E-Mail senden",
+  "mailtoSubject": "Widerruf Plainvoice Pro",
+  "back": "Zurück"
+}
+```
+
+The page renders the four Belehrung sections in order, then a horizontal rule, then the Muster-Widerrufsformular block, then a `mailto:info@plain-cards.com?subject=Widerruf%20Plainvoice%20Pro` button. No interactive form (per the wizard answer — we said NO to electronic submission, so consumers download/copy and send via email or post).
+
+## AGB § 6 reference text (the slim-down from Part 1, Change 5)
+
+The new condensed `Agb.s6Body` (replacing the four old s6* keys) becomes:
+
+```
+Verbrauchern steht grundsätzlich ein Widerrufsrecht zu. Nähere Informationen zum Widerrufsrecht sowie das Muster-Widerrufsformular ergeben sich aus der separaten Widerrufsbelehrung des Anbieters.
+```
+
+…with the heading link from `agb/page.tsx` going to `/de/widerruf`.
+
+## Email template addendum
+
+The license email (sent via Resend after successful payment) currently links to:
+- the unlock page (so customer can paste the key)
+- the AGB
+
+The license email body (DE) should now ALSO include a Widerrufsformular link near the bottom, even though the §6 BGB waiver applies (the Häkchen-checked customer waived their Widerrufsrecht). Reason: belt-and-braces — even with the waiver, customers should always have a clear path to exercise withdrawal if they discover an error. Per the AGENTS.md tripwire policy, we honor 30-day refunds operationally regardless.
+
+Suggested copy at the bottom of the email body:
+
+> Möchten Sie den Vertrag widerrufen? Auch wenn das Widerrufsrecht durch Ihre Zustimmung zur sofortigen Vertragserfüllung erloschen ist, finden Sie das Muster-Widerrufsformular sowie unsere Kontaktdaten unter https://plainvoice.de/de/widerruf — wir bearbeiten Anfragen wohlwollend.
+
+The "wir bearbeiten Anfragen wohlwollend" (we handle requests favorably) is intentionally informal — it signals goodwill without contractually committing to refund-on-demand.
+
+## Sitemap update
+
+`src/app/sitemap.ts` adds an entry for `/de/widerruf` (DE only, no `/en/widerruf` per DE-only-legal-pages decision). Priority 0.5, same as `/buy` and `/unlock`.
 
 ---
 
-# When all three parts are complete
+# All three parts complete — ready to hand to Code
 
-This brief becomes the canonical implementation spec for the `m7-p3-template-driven-revisions` PR. Cowork PM writes a separate short Code-prompt at that point that points at this file, lists each Change as one commit, and follows the standard handoff-brief flow per AGENTS.md "Handoff briefs" rule #5 (Code self-commits the brief if uncommitted).
+This brief is now the canonical implementation spec for the `m7-p3-template-driven-revisions` PR. Six commits suggested:
 
-Until Part 3 is filled in, do NOT hand this to Code — the AGB + Datenschutz changes shouldn't ship without their Widerrufsbelehrung counterpart.
+1. **Commit 1:** AGB augmentations from Part 1 (changes 1-4 — § 1 customer T&Cs rejection, § 3 expansion, § 4 Stripe disclosure, § 5 Direktzugriff formulation). All within `de.json` `Agb.*` keys.
+2. **Commit 2:** AGB §6 slim-down + new `/de/widerruf` page from Part 1 Change 5 + Part 3. New i18n namespace `Widerruf`, new page file, AGB §6 references the new page, BuyForm consent link points to `/de/widerruf`.
+3. **Commit 3:** AGB Changes 6-9 from Part 1 (§ 6a Nutzungsrechte, § 10 jurisdiction enhancement, § 13 DE-only revision, § 14 Verbraucherschlichtung). All in `de.json` `Agb.*` keys + page.tsx renderer if section count changes.
+4. **Commit 4:** Datenschutzerklärung overhaul from Part 2. Rewrite `Privacy.s*` keys. Update `datenschutz/page.tsx` if section structure changes.
+5. **Commit 5:** Email template Widerruf addendum (Worker repo `plainvoice-pay`, in `src/lib/resend.ts` or wherever the email body lives). One commit, one repo. Yes, this means PR-3 spans BOTH repos — the brief makes that explicit; Code opens two PRs (one per repo) cross-linked. **Edit 2026-04-30:** alternatively, fold this into a separate, smaller PR after the frontend PR merges — Code's call based on what reads cleanest.
+6. **Commit 6:** Sitemap entry + LEGAL_LAST_UPDATED bump.
+
+Code prompt to use when handing this off (after frontend repo working tree is clean):
+
+```
+Model: Claude Opus 4.6 (legal-text correctness is high-stakes). Run `/model opus` if not already.
+
+cd ~/Documents/Codex/x-rechnung-conversion.
+
+First action: read AGENTS.md. Then commit and push the brief at
+docs/handoffs/M7-p3-template-driven-revisions.md to main per AGENTS.md
+"Handoff briefs" rule #5. Stop and ask if `git status --short` shows
+unrelated pending changes.
+
+Once the brief is on origin/main, read it end-to-end (it's three Parts —
+all three need to be applied; do not skip Part 3). Then read AGENTS.md
+once more, then read these dependent files in the repo:
+- src/i18n/messages/de.json (current legal text)
+- src/app/[locale]/agb/page.tsx (renders AGB sections)
+- src/app/[locale]/datenschutz/page.tsx (renders Datenschutz sections)
+- src/components/BuyForm.tsx (consent checkbox + AGB §6 link)
+- src/app/sitemap.ts (URL list)
+
+Execute the brief. Six commits suggested in the brief's "All three parts
+complete" section. Stop and ask if any "Stop and ask if" condition fires
+(none defined yet — but if the i18n parity test fails after EN-key drops,
+or if the Widerrufsformular text differs from BGB Anlage 2 exact wording,
+ask).
+
+Begin by acking readiness in one line, then commit the brief, then start
+with Commit 1.
+```
+
 
 ---
 
