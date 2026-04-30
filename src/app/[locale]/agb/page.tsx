@@ -36,7 +36,10 @@ export default async function AgbPage({
   if (!isLocale(locale)) notFound();
   setRequestLocale(locale);
 
-  const t = await getTranslations('Agb');
+  // Legal pages are DE-only — always load German translations regardless
+  // of the route locale. EN routes show DE legal text per the locked-decision
+  // DE-only-legal scope (docs/handoffs/07-stripe-paywall.md).
+  const t = await getTranslations({ locale: 'de', namespace: 'Agb' });
   const tApp = await getTranslations('App');
   const tf = await getTranslations('Footer');
 
@@ -48,26 +51,8 @@ export default async function AgbPage({
     { heading: t('s3Heading'), body: t('s3Body') },
     { heading: t('s4Heading'), body: t('s4Body') },
     { heading: t('s5Heading'), body: t('s5Body') },
-    {
-      heading: t('s6Heading'),
-      extra: (
-        <div className="space-y-4">
-          <p>{t('s6Intro')}</p>
-          <div>
-            <h3 className="mb-1 font-medium text-[color:var(--foreground)]">{t('s6RightHeading')}</h3>
-            <p className="whitespace-pre-line">{t('s6RightBody')}</p>
-          </div>
-          <div>
-            <h3 className="mb-1 font-medium text-[color:var(--foreground)]">{t('s6ConsequencesHeading')}</h3>
-            <p className="whitespace-pre-line">{t('s6ConsequencesBody')}</p>
-          </div>
-          <div>
-            <h3 className="mb-1 font-medium text-[color:var(--foreground)]">{t('s6ExpiryHeading')}</h3>
-            <p className="whitespace-pre-line">{t('s6ExpiryBody')}</p>
-          </div>
-        </div>
-      ),
-    },
+    { heading: t('s6Heading'), body: t('s6Body') },
+    { heading: t('s6aHeading'), body: t('s6aBody') },
     { heading: t('s7Heading'), body: t('s7Body') },
     { heading: t('s8Heading'), body: t('s8Body') },
     { heading: t('s9Heading'), body: t('s9Body') },
@@ -75,6 +60,7 @@ export default async function AgbPage({
     { heading: t('s11Heading'), body: t('s11Body') },
     { heading: t('s12Heading'), body: t('s12Body') },
     { heading: t('s13Heading'), body: t('s13Body') },
+    { heading: t('s14Heading'), body: t('s14Body') },
   ];
 
   return (

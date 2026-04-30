@@ -2,9 +2,9 @@ import { describe, expect, it } from 'vitest';
 import sitemap from '@/app/sitemap';
 
 describe('sitemap', () => {
-  it('returns exactly twelve entries', () => {
+  it('returns exactly thirteen entries', () => {
     const entries = sitemap();
-    expect(entries).toHaveLength(12);
+    expect(entries).toHaveLength(13);
   });
 
   it('contains the home page URLs', () => {
@@ -29,6 +29,13 @@ describe('sitemap', () => {
     const urls = sitemap().map((e) => e.url);
     expect(urls).toContain('https://plainvoice.de/de/agb');
     expect(urls).toContain('https://plainvoice.de/en/agb');
+  });
+
+  it('contains the widerruf URL (DE only)', () => {
+    const urls = sitemap().map((e) => e.url);
+    expect(urls).toContain('https://plainvoice.de/de/widerruf');
+    // No /en/widerruf — legal pages are DE-only
+    expect(urls).not.toContain('https://plainvoice.de/en/widerruf');
   });
 
   it('contains the buy URLs', () => {

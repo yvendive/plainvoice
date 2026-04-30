@@ -17,4 +17,4 @@ export const COMPANY = {
  * code changes to the legal pages, only for text content).
  * ISO date string YYYY-MM-DD.
  */
-export const LEGAL_LAST_UPDATED = '2026-04-27';
+export const LEGAL_LAST_UPDATED = '2026-04-30';
