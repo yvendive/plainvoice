@@ -300,57 +300,133 @@ If Search Console shows queries we rank poorly for but match our intent, write o
 | One bilingual OG image v1 | Locale-aware variants are post-launch optimization. |
 | AI optimization via llms.txt + JSON-LD | Lowest-effort, highest-leverage AI-discovery signals. Specialized GEO consulting parked until traffic justifies it. |
 
-# Implementation prompt for Code
+# Implementation prompt for Code (with dual-review chaining)
 
-Per AGENTS.md "Handoff briefs" rule #6, the chat-paste prompt is also surfaced in the chat reply when handing off — this embedded version is the canonical reference. Phase 0 is one PR; Phases 1+ are separate PRs.
+Per AGENTS.md "Handoff briefs" rule #6, the chat-paste prompt is also surfaced in the chat reply when handing off — this embedded version is the canonical reference. Per rule #7 (dual-review pipeline + prompt chaining), Code's reply embeds the Codex review prompt for the next baton-pass. Phase 0 is one PR; Phases 1+ are separate PRs.
 
-Phase 0 prompt:
+Phase 0 prompt (the ONE prompt Yves fires; Code's reply contains the Codex review prompt for the second baton-pass):
 
 ```
-Model: Claude Sonnet 4.6. /model sonnet if not already.
+Model: Claude Sonnet 4.6.
 
 cd ~/Documents/Codex/x-rechnung-conversion.
-git checkout main && git pull origin main.
 
-Read AGENTS.md. The brief at docs/handoffs/M8-seo-and-aeo.md is the
-implementation spec. If it's not committed on origin/main, commit + push
-it first per Handoff Briefs rule #5.
+First action: read AGENTS.md (especially Handoff Briefs rule #5 brief
+self-commit, rule #6 chat-prompt pattern, and rule #7 dual-review
+prompt-chaining). The implementation brief at
+docs/handoffs/M8-seo-and-aeo.md is the spec. If it's not committed on
+origin/main, commit + push it first per rule #5.
 
-Read the brief, focusing on Phase 0 (P0.1-P0.5). Phases 1+ are out of
-scope for this PR.
+Read the brief, focusing on Phase 0 (P0.1 through P0.6). Phases 1+ are
+out of scope.
 
 Then read these dependent files:
 - src/app/[locale]/layout.tsx (current generateMetadata)
+- src/app/layout.tsx (root layout — already has Cloudflare beacon)
 - src/app/[locale]/page.tsx (home page metadata)
-- src/app/sitemap.ts (current sitemap; will gain /de/wissen entries
-  later but not in P0)
-- public/ (where llms.txt and og-image.png will live)
-- README.md (current state)
+- src/app/sitemap.ts
+- src/app/[locale]/agb/page.tsx (for the §6 clickable-link change in P0.6b)
+- public/.htaccess (current CSP — verify the schema additions don't conflict)
+- README.md (Phase 0.5 rewrite is a SEPARATE step, NOT in this PR)
+- src/i18n/messages/de.json + en.json (for footer link key in P0.6a)
 
-Branch: m8-seo-phase0. Approximately seven commits:
+Branch: m8-seo-phase0. Approximately seven commits per the brief:
 1. OG + Twitter Card meta tags + OG image (placeholder PNG ok if Yves
-   hasn't supplied one — flag it in PR body).
+   hasn't supplied one — flag in PR body).
 2. llms.txt + llms-full.txt (verify current spec at https://llmstxt.org
-   first; the format moves fast).
-3. JSON-LD SoftwareApplication + Organization + WebSite schema.
-4. hreflang DE/EN for canonical pages.
-5. P0.6a — Footer link to Widerrufsbelehrung on every page.
+   first — the format moves fast).
+3. JSON-LD SoftwareApplication + Organization + WebSite schema. Test
+   with Google's Rich Results Test before committing.
+4. hreflang DE/EN for canonical pages, with x-default.
+5. P0.6a — Footer Widerrufsbelehrung link on every page footer.
 6. P0.6b — AGB §6 reference becomes a clickable link to /de/widerruf.
-7. P0.6c — Test assertions for the new footer link.
+7. P0.6c — Tests for the new footer link.
 
-README rewrite (P0.5) is a SEPARATE step — don't include in this PR.
-Cowork PM drafts to docs/marketing/readme-draft.md first; Code applies
-that draft as a follow-up PR after Yves reviews.
+README rewrite (P0.5) is a SEPARATE follow-up — Cowork PM drafts to
+docs/marketing/readme-draft.md first; Yves reviews; Code applies in a
+new PR. Do NOT include in this PR.
 
 Stop and ask if:
 - The OG image isn't supplied and you can't generate one cleanly.
-- llmstxt.org spec has changed in a way that the brief's skeleton no
-  longer reflects.
-- The JSON-LD schema fails Google's Rich Results Test.
+- llmstxt.org spec has changed in a way the brief's skeleton no longer
+  reflects.
+- The JSON-LD fails Google's Rich Results Test.
+- The CSP needs adjustment for any new schema sources.
 
-When done — branch + PR URL, lint+typecheck+test output, exact final
-sitemap.xml content, and the rendered llms.txt/llms-full.txt content
-(paste back so Cowork PM can sanity-check).
+When done, your reply to Yves MUST include all of:
+
+1. Branch + PR URL.
+2. lint+typecheck+test signal output.
+3. Exact final sitemap.xml content.
+4. Rendered llms.txt and llms-full.txt content.
+5. Any deviations from the brief, with rationale.
+
+6. The verbatim Codex review prompt below, surfaced as a code block in
+   your reply, ready for Yves to paste into a separate Codex session.
+   DO NOT execute this prompt yourself.
+
+   ```
+   You are a second-pass reviewer on PR yvendive/plainvoice#<N>
+   (replace <N> with the number from Code's reply).
+
+   cd ~/Documents/Codex/x-rechnung-conversion.
+
+   Use `gh` CLI to access the PR — DO NOT scrape the URL:
+   - `gh pr view <N>`     — title, body, CI status, author, labels
+   - `gh pr checks <N>`   — current CI status (lint/typecheck/test green?)
+   - `gh pr diff <N>`     — the raw diff
+   - `gh pr checkout <N>` — fetches + checks out the branch locally
+
+   Read in this order:
+   1. AGENTS.md (Code Review Verification rule #4, Handoff Briefs rules
+      #6 and #7).
+   2. docs/handoffs/M8-seo-and-aeo.md — Phase 0 only (P0.1–P0.6).
+   3. `gh pr view <N>` output.
+   4. `gh pr checks <N>` — CI red is a blocker finding before deeper
+      review.
+   5. `gh pr diff <N>`.
+   6. After `gh pr checkout <N>`, read each changed file in full.
+
+   Verify:
+   - Each commit maps to one Phase 0 sub-task. README rewrite (P0.5)
+     should NOT be in this PR — flag if it is.
+   - llms.txt content matches the current spec at https://llmstxt.org.
+   - JSON-LD is spec-compliant. Run Google's Rich Results Test if
+     possible.
+   - hreflang annotations include DE, EN, AND x-default.
+   - CSP in public/.htaccess doesn't break Stripe Checkout or the
+     Cloudflare beacon.
+   - Widerrufsbelehrung footer link appears in EVERY page footer — grep
+     to confirm completeness.
+   - AGB §6 in-text link works at the rendered DOM level.
+   - Tests cover the new footer-link rendering.
+
+   Run after `gh pr checkout <N>`:
+     pnpm install --frozen-lockfile && pnpm lint && pnpm typecheck && pnpm test
+
+   All four signals must be green. Paste the test summary in your reply.
+
+   Produce structured findings:
+
+   ## Spec compliance
+   ## Code quality
+   ## Test coverage
+   ## Security and performance
+   ## Verdict
+   - APPROVE / REQUEST_CHANGES with file:line for each issue.
+
+   Reply to Yves in chat. Do NOT post comments on the PR via
+   `gh pr comment` or `gh pr review` — review-only and chat-only.
+   Cowork PM synthesizes; if anything goes back to Code as a change
+   request, Cowork PM writes that, not you.
+   ```
+
+7. After surfacing the Codex prompt, add the following one-line
+   instruction to Yves verbatim:
+
+   > After Codex replies with its structured findings, paste them
+   > back to Cowork PM (the chat where this M8 Phase 0 work was
+   > kicked off) for cross-check and final verdict.
 
 Begin by acking readiness in one line, then start with P0.1.
 ```
