@@ -5,6 +5,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { isLocale } from '@/i18n/config';
 import { LanguageToggle } from '@/components/LanguageToggle';
 import { LEGAL_LAST_UPDATED } from '@/lib/legal/company';
+import React from 'react';
 
 function renderParagraphs(text: string) {
   return text.split('\n\n').map((p, i) => (
@@ -45,13 +46,26 @@ export default async function AgbPage({
 
   const lastUpdated = LEGAL_LAST_UPDATED;
 
+  // §6 body uses rich text — "separaten Widerrufsbelehrung" is a clickable link
+  const s6Extra = (
+    <p className="whitespace-pre-line">
+      {t.rich('s6Body', {
+        widerrufLink: (chunks) => (
+          <Link href="/de/widerruf" className="underline underline-offset-2 hover:opacity-80">
+            {chunks}
+          </Link>
+        ),
+      })}
+    </p>
+  );
+
   const sections: Array<{ heading: string; body?: string; extra?: React.ReactNode }> = [
     { heading: t('s1Heading'), body: t('s1Body') },
     { heading: t('s2Heading'), body: t('s2Body') },
     { heading: t('s3Heading'), body: t('s3Body') },
     { heading: t('s4Heading'), body: t('s4Body') },
     { heading: t('s5Heading'), body: t('s5Body') },
-    { heading: t('s6Heading'), body: t('s6Body') },
+    { heading: t('s6Heading'), extra: s6Extra },
     { heading: t('s6aHeading'), body: t('s6aBody') },
     { heading: t('s7Heading'), body: t('s7Body') },
     { heading: t('s8Heading'), body: t('s8Body') },
