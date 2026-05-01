@@ -36,6 +36,12 @@ Process rule for Cowork PM → Code handoffs. Yves flagged repeated violations o
 
 6. **Always present the ready-to-paste chat prompt in the conversation — not just in the brief.** Even when the brief contains an embedded prompt as canonical reference, Cowork PM ALWAYS surfaces the ready-to-paste version in chat when handing off to Code. Yves operates in chat; he should never have to scroll through a 200-line brief to find his next action. Phrases like "the prompt is in the brief, take it from there" are forbidden. Always paste the prompt as a code block in the chat reply, even if it duplicates what's in the brief. The brief's embedded prompt serves as a permanent reference for future agents resuming the work; the chat-presented prompt serves Yves's immediate next click.
 
+7. **Optional dual-review pipeline for high-stakes PRs.** Yves may elect a second-pass review by an additional agent (Codex, a separate Claude Code session, or any reviewer-mode agent) on top of Cowork PM's own rule-#4 review. Default: Cowork PM proactively offers dual review for PRs touching security boundaries, payment flow, legal text, multi-file refactors, or anything where a regression would directly harm a customer. For trivial config-only fixes the dual-review overhead isn't justified — Cowork PM's review alone suffices. Yves can opt in for any PR regardless of category.
+
+   **Workflow:** (1) Cowork PM writes brief. (2) Code (primary implementer) implements + opens PR. (3) Cowork PM provides Yves both a Code prompt AND a separate Codex review prompt. (4) Codex reads brief + PR diff + AGENTS.md, runs `pnpm lint && pnpm typecheck && pnpm test`, produces structured findings (spec deviations, code-quality issues, test gaps, security/performance concerns) with an APPROVE / REQUEST_CHANGES verdict. (5) Yves shares Codex's findings back with Cowork PM. (6) Cowork PM cross-checks Codex's findings, resolves any disagreement explicitly, delivers final verdict to Yves. (7) Yves merges (or asks Code to address open findings first).
+
+   The two reviewers' job is NOT to compete — Cowork PM owns the synthesis; if Cowork PM and Codex disagree, Cowork PM articulates which view is correct and why. Disagreements that survive synthesis (rare) get escalated to Yves to decide.
+
 ## Model selection
 
 Every Code handoff declares the recommended model. Two places it appears:
