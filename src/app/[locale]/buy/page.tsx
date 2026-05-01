@@ -5,6 +5,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { isLocale } from '@/i18n/config';
 import { LanguageToggle } from '@/components/LanguageToggle';
 import { BuyForm } from '@/components/BuyForm';
+import { pageAlternates, pageOpenGraph, pageTwitter } from '@/lib/seo/metadata';
 
 export async function generateMetadata({
   params,
@@ -14,10 +15,13 @@ export async function generateMetadata({
   const { locale } = await params;
   if (!isLocale(locale)) return {};
   const t = await getTranslations({ locale, namespace: 'Buy' });
+  const title = `${t('title')} — Plainvoice`;
   return {
-    title: `${t('title')} — Plainvoice`,
+    title,
     robots: { index: true, follow: true },
-    alternates: { canonical: `/${locale}/buy` },
+    alternates: { canonical: `/${locale}/buy`, ...pageAlternates('/buy') },
+    openGraph: pageOpenGraph({ locale, path: `/${locale}/buy`, title }),
+    twitter: pageTwitter({ title }),
   };
 }
 

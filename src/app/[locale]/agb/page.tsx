@@ -6,6 +6,7 @@ import { isLocale } from '@/i18n/config';
 import { LanguageToggle } from '@/components/LanguageToggle';
 import { LEGAL_LAST_UPDATED } from '@/lib/legal/company';
 import React from 'react';
+import { pageAlternates, pageOpenGraph, pageTwitter } from '@/lib/seo/metadata';
 
 function renderParagraphs(text: string) {
   return text.split('\n\n').map((p, i) => (
@@ -21,10 +22,13 @@ export async function generateMetadata({
   const { locale } = await params;
   if (!isLocale(locale)) return {};
   const t = await getTranslations({ locale, namespace: 'Agb' });
+  const title = `${t('title')} — Plainvoice`;
   return {
-    title: `${t('title')} — Plainvoice`,
+    title,
     robots: { index: true, follow: true },
-    alternates: { canonical: `/${locale}/agb` },
+    alternates: { canonical: `/${locale}/agb`, ...pageAlternates('/agb') },
+    openGraph: pageOpenGraph({ locale, path: `/${locale}/agb`, title }),
+    twitter: pageTwitter({ title }),
   };
 }
 

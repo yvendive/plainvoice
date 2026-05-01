@@ -5,6 +5,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { isLocale } from '@/i18n/config';
 import { LanguageToggle } from '@/components/LanguageToggle';
 import { LEGAL_LAST_UPDATED } from '@/lib/legal/company';
+import { deOnlyAlternates, pageOpenGraph, pageTwitter } from '@/lib/seo/metadata';
 
 function renderParagraphs(text: string) {
   return text.split('\n\n').map((p, i) => (
@@ -20,10 +21,13 @@ export async function generateMetadata({
   const { locale } = await params;
   if (!isLocale(locale)) return {};
   const t = await getTranslations({ locale: 'de', namespace: 'Widerruf' });
+  const title = `${t('title')} — Plainvoice`;
   return {
-    title: `${t('title')} — Plainvoice`,
+    title,
     robots: { index: true, follow: true },
-    alternates: { canonical: '/de/widerruf' },
+    alternates: { canonical: '/de/widerruf', ...deOnlyAlternates('/de/widerruf') },
+    openGraph: pageOpenGraph({ locale: 'de', path: '/de/widerruf', title }),
+    twitter: pageTwitter({ title }),
   };
 }
 
