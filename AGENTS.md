@@ -42,6 +42,8 @@ Process rule for Cowork PM → Code handoffs. Yves flagged repeated violations o
 
    The two reviewers' job is NOT to compete — Cowork PM owns the synthesis; if Cowork PM and Codex disagree, Cowork PM articulates which view is correct and why. Disagreements that survive synthesis (rare) get escalated to Yves to decide.
 
+   **Prompt chaining (baton-passing).** Yves never holds two prompts at once. The flow is: Cowork PM gives Yves ONE prompt (Code's). Code's "When done" reply requirement includes (a) the standard PR-URL + signals payload, (b) the verbatim Codex review prompt for Yves to copy-paste into a separate Codex session, (c) a one-line instruction telling Yves "after Codex replies with its structured findings, paste them back to Cowork PM." Codex's structured-findings reply is the next baton; Yves pastes it back to Cowork PM, who synthesizes and delivers the final verdict. The chain is: Cowork PM → Code → (Code's reply contains Codex prompt) → Codex → (Codex's reply contains structured findings) → Cowork PM (synthesis + final verdict). Yves's role at each handoff is "paste the latest reply into the next agent" — minimal cognitive load, no juggling.
+
 ## Model selection
 
 Every Code handoff declares the recommended model. Two places it appears:
