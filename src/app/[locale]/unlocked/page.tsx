@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { isLocale } from '@/i18n/config';
 import { LanguageToggle } from '@/components/LanguageToggle';
+import { pageAlternates, pageOpenGraph, pageTwitter } from '@/lib/seo/metadata';
 
 export async function generateMetadata({
   params,
@@ -12,10 +13,14 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   if (!isLocale(locale)) return {};
+  const title = 'Plainvoice Pro';
   return {
-    title: 'Plainvoice Pro',
+    title,
     // Exclude from search engines — transactional landing reached via Stripe redirect only.
     robots: { index: false, follow: false },
+    alternates: { canonical: `/${locale}/unlocked`, ...pageAlternates('/unlocked') },
+    openGraph: pageOpenGraph({ locale, path: `/${locale}/unlocked`, title }),
+    twitter: pageTwitter({ title }),
   };
 }
 
@@ -55,6 +60,7 @@ export default async function UnlockedPage({
       <footer className="flex justify-center gap-4 border-t px-6 py-4 text-sm text-[color:var(--muted-foreground)]">
         <Link href={`/${locale}/impressum`} className="underline-offset-4 hover:underline">{tf('impressumLink')}</Link>
         <Link href={`/${locale}/agb`} className="underline-offset-4 hover:underline">{tf('termsLink')}</Link>
+        <Link href="/de/widerruf" className="underline-offset-4 hover:underline">{tf('widerrufLink')}</Link>
         <Link href={`/${locale}/datenschutz`} className="underline-offset-4 hover:underline">{tf('privacyLink')}</Link>
       </footer>
     </div>

@@ -66,6 +66,7 @@
     "privacyLink": "Datenschutz",
     "impressumLink": "Impressum",
     "termsLink": "AGB",
+    "widerrufLink": "Widerrufsbelehrung",
     "copyright": "© {year} Plainvoice. Open Source (MIT).",
     "requirements": "Funktioniert in allen modernen Browsern. Kein Download, kein Konto, kein Upload."
   },
@@ -141,7 +142,7 @@
     "s5Heading": "§ 5 Leistungserbringung",
     "s5Body": "Der Lizenzschlüssel wird unmittelbar nach erfolgreicher Zahlung per E-Mail an die vom Kunden angegebene Adresse versandt. Digitale Inhalte werden dem Kunden per Direktzugriff über die Website des Anbieters (plainvoice.de) sowie per E-Mail (Übermittlung des Lizenzschlüssels) bereitgestellt. Der Kunde ist verpflichtet, für eine gültige E-Mail-Adresse zu sorgen. Der Anbieter bemüht sich um eine hohe Verfügbarkeit der Dienste, schuldet jedoch keine ununterbrochene Verfügbarkeit. Wartungsarbeiten und unvorhergesehene Ausfälle berechtigen nicht zur Minderung des bereits gezahlten Entgelts.",
     "s6Heading": "§ 6 Widerrufsrecht",
-    "s6Body": "Verbrauchern steht grundsätzlich ein Widerrufsrecht zu. Nähere Informationen zum Widerrufsrecht sowie das Muster-Widerrufsformular ergeben sich aus der separaten Widerrufsbelehrung des Anbieters.",
+    "s6Body": "Verbrauchern steht grundsätzlich ein Widerrufsrecht zu. Nähere Informationen zum Widerrufsrecht sowie das Muster-Widerrufsformular ergeben sich aus der <widerrufLink>separaten Widerrufsbelehrung</widerrufLink> des Anbieters.",
     "s6aHeading": "§ 6a Einräumung von Nutzungsrechten",
     "s6aBody": "Sofern sich aus der Inhaltsbeschreibung im Online-Shop des Anbieters nichts anderes ergibt, räumt der Anbieter dem Kunden an den bereitgestellten Inhalten das nicht ausschließliche, zeitlich unbefristete Recht ein, die Inhalte zu privaten sowie zu kommerziellen Zwecken zu nutzen. Eine Weitergabe der Inhalte oder des Lizenzschlüssels an Dritte oder die Erstellung von Kopien für Dritte außerhalb des Rahmens dieser AGB ist nicht gestattet, soweit nicht der Anbieter einer Übertragung der vertragsgegenständlichen Lizenz an den Dritten zugestimmt hat. Die Rechtseinräumung wird erst wirksam, wenn der Kunde die vertraglich geschuldete Vergütung vollständig geleistet hat. Die Lizenz berechtigt den Kunden zur Nutzung der gehosteten Software unter plainvoice.de. Sie umfasst nicht das Recht, eine selbst gehostete Instanz der unter freier Lizenz veröffentlichten Software für eigene oder fremde Zwecke zu betreiben und dabei den vom Anbieter vergebenen Lizenzschlüssel oder die Marke „Plainvoice“ zu verwenden.",
     "s7Heading": "§ 7 Gewährleistung",

@@ -5,6 +5,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { isLocale } from '@/i18n/config';
 import { LanguageToggle } from '@/components/LanguageToggle';
 import { COMPANY } from '@/lib/legal/company';
+import { pageAlternates, pageOpenGraph, pageTwitter } from '@/lib/seo/metadata';
 
 export async function generateMetadata({
   params,
@@ -14,10 +15,13 @@ export async function generateMetadata({
   const { locale } = await params;
   if (!isLocale(locale)) return {};
   const t = await getTranslations({ locale, namespace: 'Impressum' });
+  const title = `${t('title')} — Plainvoice`;
   return {
-    title: `${t('title')} — Plainvoice`,
+    title,
     robots: { index: true, follow: true },
-    alternates: { canonical: `/${locale}/impressum` },
+    alternates: { canonical: `/${locale}/impressum`, ...pageAlternates('/impressum') },
+    openGraph: pageOpenGraph({ locale, path: `/${locale}/impressum`, title }),
+    twitter: pageTwitter({ title }),
   };
 }
 
@@ -108,6 +112,7 @@ export default async function ImpressumPage({
       <footer className="flex justify-center gap-4 border-t px-6 py-4 text-sm text-[color:var(--muted-foreground)]">
         <Link href={`/${locale}/impressum`} className="underline-offset-4 hover:underline">{tf('impressumLink')}</Link>
         <Link href={`/${locale}/agb`} className="underline-offset-4 hover:underline">{tf('termsLink')}</Link>
+        <Link href="/de/widerruf" className="underline-offset-4 hover:underline">{tf('widerrufLink')}</Link>
         <Link href={`/${locale}/datenschutz`} className="underline-offset-4 hover:underline">{tf('privacyLink')}</Link>
       </footer>
     </div>
