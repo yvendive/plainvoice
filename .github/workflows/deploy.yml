@@ -34,7 +34,7 @@ jobs:
         env:
           NEXT_PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN: ${{ secrets.CLOUDFLARE_ANALYTICS_TOKEN }}
           NEXT_PUBLIC_WORKER_URL: https://plainvoice-pay.yvendive.workers.dev
-          NEXT_PUBLIC_PAYWALL_LIVE: 'false'
+          NEXT_PUBLIC_PAYWALL_LIVE: 'true'
         run: pnpm build
 
       - name: Deploy via FTPS
