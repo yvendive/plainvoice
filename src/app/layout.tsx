@@ -15,6 +15,18 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="de" suppressHydrationWarning>
+      <head>
+        {/* Preload the primary Inter weight so the browser fetches it before
+            hitting the CSS that references it. Reduces FCP/LCP delay.
+            PSI: render-blocking requests (30 ms savings). */}
+        <link
+          rel="preload"
+          href="/fonts/Inter-Regular.ttf"
+          as="font"
+          type="font/ttf"
+          crossOrigin="anonymous"
+        />
+      </head>
       <body className="min-h-screen antialiased">{children}</body>
       {CLOUDFLARE_ANALYTICS_TOKEN ? (
         <Script

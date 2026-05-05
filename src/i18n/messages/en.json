@@ -60,7 +60,8 @@
     "warningUnrecognisedVersion": "Notice: XRechnung version not fully recognised.",
     "warningDate": "Notice: incomplete date detected.",
     "warningMissingField": "Notice: optional field missing ({field}).",
-    "fileSize": "{size} KB"
+    "fileSize": "{size} KB",
+    "fileInputLabel": "Choose X-Rechnung file"
   },
   "Footer": {
     "privacyLink": "Privacy",

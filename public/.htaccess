@@ -14,3 +14,26 @@
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
   Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), interest-cohort=()"
 </IfModule>
+
+# Cache-Control — PSI: 85 KiB savings from proper cache lifetimes
+#
+# Next.js emits content-hashed filenames for all JS/CSS/font chunks
+# (e.g., /_next/static/chunks/579-455ac82f.js), so these assets are
+# safe to cache indefinitely — a new hash means a new filename.
+# Images and HTML use shorter TTLs because their URLs are stable.
+<IfModule mod_headers.c>
+  # Hashed JS/CSS/font assets — immutable by construction
+  <FilesMatch "\.(js|css|woff2|woff|ttf|otf)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+
+  # Images — stable URLs, change infrequently
+  <FilesMatch "\.(png|jpg|jpeg|webp|svg|ico)$">
+    Header set Cache-Control "public, max-age=2592000"
+  </FilesMatch>
+
+  # HTML — short TTL so new releases are visible within minutes
+  <FilesMatch "\.html$">
+    Header set Cache-Control "public, max-age=300, must-revalidate"
+  </FilesMatch>
+</IfModule>
