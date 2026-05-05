@@ -68,17 +68,30 @@ describe('AGB i18n (DE-only) — key structure', () => {
   });
 });
 
-describe('Footer i18n — three links present', () => {
-  it('DE Footer has impressumLink, termsLink, privacyLink', () => {
+describe('Footer i18n — four links present (P0.6a Widerrufsbelehrung link)', () => {
+  it('DE Footer has impressumLink, termsLink, widerrufLink, privacyLink', () => {
     expect(deMessages.Footer.impressumLink).toBeTruthy();
     expect(deMessages.Footer.termsLink).toBeTruthy();
+    expect(deMessages.Footer.widerrufLink).toBeTruthy();
     expect(deMessages.Footer.privacyLink).toBeTruthy();
   });
 
-  it('EN Footer has impressumLink, termsLink, privacyLink', () => {
+  it('EN Footer has impressumLink, termsLink, widerrufLink, privacyLink', () => {
     expect(enMessages.Footer.impressumLink).toBeTruthy();
     expect(enMessages.Footer.termsLink).toBeTruthy();
+    expect(enMessages.Footer.widerrufLink).toBeTruthy();
     expect(enMessages.Footer.privacyLink).toBeTruthy();
+  });
+
+  it('DE and EN widerrufLink values differ (not a mistaken copy)', () => {
+    expect(deMessages.Footer.widerrufLink).not.toBe(enMessages.Footer.widerrufLink);
+  });
+});
+
+describe('AGB §6 i18n — Widerrufsbelehrung rich-text placeholder (P0.6b)', () => {
+  it('DE Agb.s6Body contains the <widerrufLink> rich-text tag', () => {
+    expect(deMessages.Agb.s6Body).toContain('<widerrufLink>');
+    expect(deMessages.Agb.s6Body).toContain('</widerrufLink>');
   });
 });
 

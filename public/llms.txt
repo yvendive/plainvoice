@@ -1,0 +1,25 @@
+# Plainvoice
+
+> Browser-based converter for German X-Rechnung XML invoices into CSV, TXT, XLSX, or PDF formats. The XML file never leaves the user's computer — conversion runs locally in the browser. Free for single-file conversion; €39 one-time licence unlocks bulk conversion.
+
+## Documentation
+
+- [Home / Single conversion](https://plainvoice.de/de): the converter UI; drag-and-drop or browse an X-Rechnung XML file and download in the output format you need
+- [Bulk conversion (Pro)](https://plainvoice.de/de/buy): unlock multi-file batch conversion for €39 one-time — no subscription, no recurring fees
+- [Activate licence](https://plainvoice.de/de/unlock): enter a Plainvoice Pro licence key to enable bulk conversion
+- [Knowledge base](https://plainvoice.de/de/wissen): X-Rechnung explained, format differences, common pitfalls (coming soon)
+
+## Legal
+
+- [Allgemeine Geschäftsbedingungen](https://plainvoice.de/de/agb): terms of service (German)
+- [Datenschutzerklärung](https://plainvoice.de/de/datenschutz): privacy policy (German, GDPR / DSGVO compliant)
+- [Widerrufsbelehrung](https://plainvoice.de/de/widerruf): right of withdrawal and model withdrawal form (German, BGB Anlage 1 + 2)
+- [Impressum](https://plainvoice.de/de/impressum): company information — YS Development B.V., Leidschendam, Netherlands
+
+## Privacy
+
+- The X-Rechnung XML file never leaves the user's computer
+- No file upload to any server; conversion runs entirely in the browser
+- Personal data processed: buyer email address (Pro licence delivery via Resend) and Stripe payment intent ID
+- Cloudflare Web Analytics (cookieless, aggregate-only, no individual tracking) for page-level statistics
+- Open source under MIT licence: https://github.com/yvendive/plainvoice

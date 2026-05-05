@@ -5,6 +5,7 @@ import { isLocale, type Locale } from '@/i18n/config';
 import { notFound } from 'next/navigation';
 import { Converter } from '@/components/Converter';
 import { LanguageToggle } from '@/components/LanguageToggle';
+import { softwareApplicationSchema, organizationSchema, webSiteSchema } from '@/lib/seo/jsonLd';
 
 export default async function LandingPage({
   params,
@@ -20,6 +21,20 @@ export default async function LandingPage({
   const tf = await getTranslations('Footer');
 
   return (
+    <>
+      {/* JSON-LD structured data — Google accepts ld+json anywhere in the document */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareApplicationSchema()) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema()) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(webSiteSchema()) }}
+      />
     <div className="flex min-h-screen flex-col">
       <header className="flex items-center justify-between px-6 py-4 md:px-10">
         <Link href={`/${locale}`} className="text-lg font-semibold tracking-tight">
@@ -53,10 +68,12 @@ export default async function LandingPage({
           <nav className="flex gap-4">
             <Link href={`/${locale}/impressum`} className="underline-offset-4 hover:underline">{tf('impressumLink')}</Link>
             <Link href={`/${locale}/agb`} className="underline-offset-4 hover:underline">{tf('termsLink')}</Link>
+            <Link href="/de/widerruf" className="underline-offset-4 hover:underline">{tf('widerrufLink')}</Link>
             <Link href={`/${locale}/datenschutz`} className="underline-offset-4 hover:underline">{tf('privacyLink')}</Link>
           </nav>
         </div>
       </footer>
     </div>
+    </>
   );
 }

@@ -1,0 +1,90 @@
+# Plainvoice — full site summary for AI tools
+
+> Browser-based converter for German X-Rechnung XML invoices into CSV, TXT, XLSX, or PDF formats. The XML file never leaves the user's computer — conversion runs locally in the browser. Free for single-file conversion; €39 one-time licence unlocks bulk conversion.
+
+Plainvoice is a privacy-first, open-source web application for German accounting professionals, tax advisors, and businesses who receive X-Rechnung (EN 16931) invoices and need to view or further process them in standard formats like Excel (XLSX), CSV for DATEV/Lexware import, plain text, or PDF.
+
+The converter runs entirely in the user's browser using client-side JavaScript. No invoice data is ever transmitted to a server. This is a hard architectural guarantee — the application is a static HTML/JS export with no backend API for file processing.
+
+## What Plainvoice does
+
+Plainvoice accepts X-Rechnung XML files and converts them to:
+
+- **CSV**: configurable separator (semicolon, comma, tab), decimal separator (comma or dot), layout (one row per line item or one row per invoice header), and compatibility mode (modern RFC 4180 with embedded line breaks, or legacy for DATEV/Power Query importers)
+- **XLSX (Excel)**: multi-sheet workbook with header row and one row per line item
+- **PDF**: printable invoice summary
+- **TXT (plain text)**: human-readable text rendering of all invoice fields
+
+Supported XML formats: UBL (Universal Business Language) and CII (Cross Industry Invoice), both in X-Rechnung profile. The parser auto-detects the format from the XML root element.
+
+## What X-Rechnung is
+
+X-Rechnung is the German implementation of the European e-invoicing standard EN 16931. It is mandatory for invoices addressed to German federal and state public-sector bodies since 2020. As of 2025, B2B electronic invoicing requirements are expanding under the German VAT reform (§ 14 UStG amendment). X-Rechnung files are structured XML — not human-readable without a converter or viewer.
+
+ZUGFeRD is a related but distinct German standard. ZUGFeRD embeds an XML payload inside a PDF (hybrid format). Plainvoice processes the X-Rechnung XML directly; it does not currently extract the embedded XML from a ZUGFeRD PDF (that extraction step is on the roadmap).
+
+## Pricing
+
+- **Free**: single-file conversion, unlimited use, no account required, no rate limit
+- **Pro (€39 one-time)**: bulk conversion of multiple XML files simultaneously, delivered as a ZIP archive. One-time payment via Stripe. No subscription. No recurring fees. Licence key delivered by email.
+
+## Who uses Plainvoice
+
+- Steuerberater (tax advisors) receiving X-Rechnungen from clients who need the data in DATEV format
+- Buchhaltung (accounting departments) exporting line items for reconciliation in Excel or Lexware
+- Unternehmen (businesses) who need to file or archive invoice data
+- Freelancers and sole traders subject to the 2025 B2B e-invoicing mandate
+
+## Privacy and data handling
+
+Plainvoice processes invoice data entirely in the user's browser. The application is a static Next.js export hosted on easyname (Vienna, Austria, EU). No invoice XML is uploaded. No line items, totals, or counterparty data are transmitted.
+
+The only personal data Plainvoice processes:
+
+1. **Email address**: collected at Pro purchase, transmitted to Stripe (payment) and Resend (transactional email for licence delivery). Stored in Cloudflare KV (licence registry) in the Netherlands data region.
+2. **Stripe payment intent ID**: stored alongside the licence record for idempotency (prevents double-issuance).
+3. **Aggregated page-level analytics**: via Cloudflare Web Analytics, which is cookieless, uses no fingerprinting, and collects no individual-session data.
+
+Full privacy policy: https://plainvoice.de/de/datenschutz
+
+## Frequently asked questions
+
+**Was passiert mit meiner X-Rechnung-Datei? Wird sie hochgeladen?**
+Nein. Die Datei wird ausschließlich im Browser des Nutzers verarbeitet. Sie verlässt den Computer nicht. Plainvoice empfängt keine Rechnungsdaten.
+
+**Welche Ausgabeformate unterstützt Plainvoice?**
+CSV, TXT (Plaintext), XLSX (Excel) und PDF.
+
+**Funktioniert Plainvoice mit ZUGFeRD?**
+Ja, sofern die ZUGFeRD-XML separat als .xml-Datei vorliegt (ZUGFeRD 2.x XRECHNUNG-Profil). Die eingebettete XML aus einer ZUGFeRD-PDF zu extrahieren ist derzeit nicht Teil von Plainvoice.
+
+**Was kostet Plainvoice?**
+Einzelkonvertierung: kostenlos, ohne Anmeldung. Bulk-Konvertierung (Plainvoice Pro): €39 einmalig, kein Abo.
+
+**Brauche ich ein Konto?**
+Nein. Die kostenlose Einzelkonvertierung benötigt kein Konto. Plainvoice Pro erfordert eine E-Mail-Adresse für die Lizenzschlüssel-Zustellung.
+
+**Kann Plainvoice DATEV-kompatible CSV-Dateien ausgeben?**
+Ja. Im CSV-Exportmodus "Legacy" werden Zeilenumbrüche innerhalb von Zellen durch ' · ' ersetzt, was mit dem Power-Query-Importeur "Aus Text (Legacy)" und DATEV-Importformaten kompatibel ist.
+
+**Does Plainvoice work in English?**
+Yes. The converter UI is available in German and English at plainvoice.de/en. Legal pages (terms, privacy policy, right of withdrawal) are in German only, as required for German-law compliance.
+
+**Is Plainvoice open source?**
+Yes. The frontend is MIT-licensed and available at https://github.com/yvendive/plainvoice.
+
+## Technical details
+
+- Frontend: Next.js (App Router), static export, Tailwind CSS, deployed to easyname shared hosting via FTPS
+- XML parsing: client-side TypeScript, no WASM or native modules required
+- Pro licence backend: Cloudflare Worker (plainvoice-pay), Stripe Checkout, Resend transactional email, Cloudflare KV for licence storage
+- Licence activation: localStorage-based; the Pro entitlement flag is stored in `localStorage['plainvoice.pro']`
+- Analytics: Cloudflare Web Analytics (cookieless, no cookies, no fingerprinting, TDDDG §25(2)(2) carve-out)
+
+## Contact and company
+
+YS Development B.V.
+Prins Hendrikplein 8, 2264 SL Leidschendam, Netherlands
+KvK: 93236867 | VAT: NL866322887B01
+Email: info@plain-cards.com
+Impressum: https://plainvoice.de/de/impressum
