@@ -81,6 +81,8 @@ These rules exist because we hit divergence on the M7 P2 cleanup. They prevent i
 
 7. **Always switch to main + pull before any commit-push command targeting main.** Cowork PM commit commands that target `origin/main` MUST start with `git checkout main && git pull origin main && \`. Same expectation for Code per Handoff Briefs rule #5. Reason: after Code pushes a PR branch, Yves's local stays on that feature branch — running a commit then `git push origin main` from there lands the commit on the wrong branch and the push gets rejected. We've burned this twice (PR-1 cleanup + P3b cleanup, both 2026-04-30). The branch-check is a free three-word prefix; the recovery (cherry-pick + branch cleanup) is annoying.
 
+8. **Terminal commands are paste-ready, single-block, no inline numbering.** When Cowork PM provides multi-step terminal work, the commands chain in ONE bash code block per paste — `&&` for fail-fast sequencing, `;` for run-all-and-show-output. Never embed terminal commands inside numbered markdown lists or interleave prose with code so that "step 3" could be read as something to type. If a step requires Yves's input mid-sequence (an interactive prompt like `wrangler secret put`) or browser action (Rich Results Test, dashboard work), call that out explicitly OUTSIDE any code block, then continue with the next pasteable block. The principle: every code block in Cowork PM's reply is a unit Yves can copy verbatim into terminal and execute.
+
 ## Code review verification
 
 1. **Trust but verify.** Code's PR summary is what Code intended to do, not necessarily what landed. Cowork Claude reads the actual diff before delivering a verdict. If GitHub is unreachable from the sandbox, mount the repo via `request_cowork_directory`.
