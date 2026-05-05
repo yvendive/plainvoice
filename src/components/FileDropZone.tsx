@@ -115,6 +115,7 @@ export function FileDropZone({ onFiles, onLimitError, disabled = false }: FileDr
         accept=".xml,.zip,application/xml,text/xml,application/zip"
         multiple
         className="sr-only"
+        aria-label={t('fileInputLabel')}
         disabled={disabled}
         onChange={onInputChange}
       />

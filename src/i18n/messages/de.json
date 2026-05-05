@@ -60,7 +60,8 @@
     "warningUnrecognisedVersion": "Hinweis: XRechnung-Version nicht vollständig erkannt.",
     "warningDate": "Hinweis: unvollständiges Datum erkannt.",
     "warningMissingField": "Hinweis: optionales Feld fehlt ({field}).",
-    "fileSize": "{size} KB"
+    "fileSize": "{size} KB",
+    "fileInputLabel": "X-Rechnung-Datei auswählen"
   },
   "Footer": {
     "privacyLink": "Datenschutz",
