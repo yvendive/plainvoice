@@ -51,3 +51,12 @@ Thumbs.db
 # Local Cowork / tool scratch
 .claude/
 .cursor/
+
+# Cowork PM 2026-04-30: pre-launch ops bundle (closes plainvoice#20).
+# Existing patterns covered .env / .env.* — these add explicit
+# safety for files that aren't strictly env-files.
+.dev.vars
+.dev.vars.*
+*.pem
+*.key
+wrangler.local.toml
